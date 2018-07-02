@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.CustomTestMapper">
+	<cache></cache>
+	<!-- 结果映射 -->
+	<resultMap type="CustomTest" id="customTestInfo">
+		<id property="customId" column="customId"/>
+		<result property="questionName" column="questionName"/>
+		<result property="creationDate" column="creationDate"/>
+		<result property="startDate" column="startDate"/>
+		<result property="endDate" column="endDate"/>
+		<result property="className" column="className"/>
+		<result property="teacherName" column="teacherName"/>
+		<result property="studentName" column="studentName"/>
+		<result property="isEnable" column="isEnable"/>
+	</resultMap>
+
+	<select id="selectCustomTestCount" parameterType="CustomTestDTO" resultType="int">
+		SELECT COUNT(1) FROM customtest AS c  INNER JOIN teacher AS t ON c.createdBy=t.teacherId INNER JOIN
+		questionpaper AS q ON c.questionId=q.questionId INNER JOIN class AS cl ON c.classId=cl.classId
+		<trim prefix="where" prefixOverrides="and">
+			<if test="questionName!=null">
+				and q.questionName like CONCAT('%',#{questionName},'%')
+			</if>
+			<if test="startDate!=null and endDate!=null">
+				and c.creationDate between #{startDate} and #{endDate}
+			</if>
+			<if test="teacherName!=null">
+				and t.teacherName like ConCat('%',#{teacherName},'%')
+			</if>
+		</trim>
+	</select>
+
+	<select id="selectCustomTestByPage" useCache="false" parameterType="CustomTestDTO" resultMap="customTestInfo">
+		SELECT c.customId,q.questionName,c.startDate,c.endDate,cl.className,t.teacherName,c.creationDate,c.studentName, c.isEnable
+		FROM customtest AS c INNER JOIN questionpaper AS q ON q.questionId=c.questionId INNER JOIN teacher AS t ON c.createdBy=t.teacherId
+		INNER JOIN class AS cl ON c.classId=cl.classId
+		<trim prefix="where" prefixOverrides="and">
+			<if test="questionName!=null and questionName!=''">
+				and q.questionName like CONCAT('%',#{questionName},'%')
+			</if>
+			<if test="startDate!=null and endDate!=null">
+				and c.creationDate between #{startDate} and #{endDate}
+			</if>
+			<if test="teacherName!=null and teacherName!=''">
+				and t.teacherName like ConCat('%',#{teacherName},'%')
+			</if>
+		</trim>
+		order by c.customId desc
+		LIMIT #{fromTo},#{pageSize}
+	</select>
+	<!-- 增加定制测试 -->
+	<insert id="insertCustomTest" parameterType="CustomTest">
+		insert into customtest(questionId,startDate,endDate,classId,createdBy,creationDate,studentName,examType,isEnable)
+		VALUES (#{questionId},#{startDate},#{endDate},#{classId},#{createdBy},now(),#{studentName},#{examType},#{isEnable});
+	</insert>
+	<!--根据教师Id 查询班级最近6个月月考平均分-->
+	<select id="selectCustomTestForAppByTeacherId" resultType="CustomTestResultDTO" parameterType="Integer">
+		select month(ct.startDate) examMonth ,ct.classId,class.className,avg(jl.score) scoreAvg from customtest ct
+		left JOIN custromjl jl on jl.customId = ct.customId
+		INNER JOIN class on class.classId = ct.classId
+		where ct.classId in (select tcr.classId from teacher tea
+		INNER JOIN teacherclassrelation tcr on tcr.teacherId = tea.teacherId
+		where tea.teacherId = #{teacherId}) and examType = 3 and ct.startDate between date_sub(now(),interval 6 month) and now()
+		group by examMonth,ct.classId
+	</select>
+	<!--根据教师Id 查询每个学生的最近6个月的成绩-->
+	<select id="selectStudentMonthScoreForAppByTeacherId" parameterType="Integer" resultType="CustomTestResultDTO">
+		select month(ct.startDate) examMonth ,ct.classId,class.className,jl.studentId,stu.studentName,jl.score
+		from customtest ct
+		left JOIN custromjl jl on jl.customId = ct.customId
+		INNER JOIN class on class.classId = ct.classId
+		INNER JOIN student stu on stu.studentId = jl.studentId
+		where ct.classId in (select tcr.classId from teacher tea
+		INNER JOIN teacherclassrelation tcr on tcr.teacherId = tea.teacherId
+		where tea.teacherId = #{teacherId}) and examType = 3 and ct.startDate between date_sub(now(),interval 6 month) and now()
+		ORDER BY jl.studentId,examMonth
+	</select>
+	<update id="delCustomById" parameterType="int">
+		update customtest set isEnable=0 where customId=#{customId}
+	</update>
+
+
+</mapper>

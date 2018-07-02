@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.TaskdetailMapper">
+    <!--返回对象-->
+    <resultMap type="Taskdetail" id="TaskdetailList">
+
+        <id property="detailId" column="detailId"/>
+        <result property="detailName" column="detailName"/>
+
+        <result property="taskId" column="taskId"/>
+        <result property="studentId" column="studentId"/>
+        <result property="isComplete" column="isComplete"/>
+        <result property="completeDate" column="completeDate"/>
+        <result property="isDelay" column="isDelay"/>
+        <result property="studentName" column="studentName"/>
+        <result property="imgFilePath" column="imgFilePath"/>
+        <result property="taskName" column="taskName"></result>
+        <result property="beginDate" column="beginDate"></result>
+        <result property="endDate" column="endDate"></result>
+        <result property="TaskState" column="TaskState"></result>
+        <result property="remark" column="remark"></result>
+        <result property="visibleLevel" column="visibleLevel"></result>
+        <result property="classId" column="classId"></result>
+        <result property="fstudentId" column="fstudentId"></result>
+
+
+    </resultMap>
+    <!--查询该任务的详情及完成状态-->
+    <select id="selectTaskDetailByTaskId" resultMap="TaskdetailList">
+        SELECT
+            s.classId,t.detailName,  t.detailId,t.taskId,t.isComplete,t.completeDate,t.isDelay,s.studentId,s.studentName,s.imgFilePath
+        FROM
+            taskdetail as t
+        INNER JOIN student as s on s.studentId=t.studentId
+        WHERE
+            t.taskId=#{taskId}
+    </select>
+    <!--查询本学生的参与任务以及完成状态-->
+    <select id="selectTaskDetailByStudentId" resultMap="TaskdetailList">
+       SELECT
+                s.classId,t.detailName,ta.studentId as fstudentId,  ta.taskName,ta.beginDate,ta.endDate,ta.remark,ta.taskState,ta.visibleLevel,t.detailId,t.taskId,t.isComplete,t.completeDate,t.isDelay,s.studentId,s.studentName,s.imgFilePath
+            FROM
+                taskdetail as t
+            INNER JOIN student as s on s.studentId=t.studentId
+                    INNER JOIN task as ta on ta.taskId=t.taskId
+            WHERE
+                t.studentId=#{studentId} and t.isComplete=0
+     </select>
+
+
+    <insert id="insertDetailByStudentId" parameterType="Taskdetail">
+        INSERT INTO taskdetail (
+            `detailName`,
+            `taskId`,
+            `studentId`,
+            `isComplete`,
+            `completeDate`,
+            `isDelay`
+        )
+        VALUES
+            (
+                #{detailName},
+                #{taskId},
+                #{studentId},
+                '0',
+                '0000-00-00 00:00:00',
+                '0'
+            );
+    </insert>
+</mapper>

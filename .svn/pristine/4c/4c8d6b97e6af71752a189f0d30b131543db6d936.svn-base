@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.RoleMapper">
+    <cache></cache>
+    <resultMap type="Role" id="roleList">
+        <id column="id" property="id" />
+        <result column="roleId" property="roleId" /><!---->
+        <result column="roleName" property="roleName" /><!---->
+        <result column="roleDesc" property="roleDesc" /><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertRole" parameterType="Role">
+        insert into role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId !=null and roleId>0">
+                roleId,
+            </if>
+            <if test="roleName!=null and roleName!=''">
+                roleName,
+            </if>
+            <if test="roleDesc!=null and roleDesc!=''">
+                roleDesc,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="roleId !=null and roleId>0">
+                #{roleId},
+            </if>
+            <if test="roleName!=null and roleName!=''">
+                #{roleName},
+            </if>
+            <if test="roleDesc!=null and roleDesc!=''">
+                #{roleDesc},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectRoleByID" parameterType="int"  resultMap="roleList">
+        select id ,roleId ,roleName ,roleDesc
+        from role where id=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateRole" parameterType="Role">
+        update role
+        <trim prefix="set" suffix="where id=#{id}" suffixOverrides=",">
+            <if test="roleId !=null and roleId>0">
+                roleId=#{roleId},
+            </if>
+            <if test="roleName!=null and roleName!=''">
+                roleName=#{roleName},
+            </if>
+            <if test="roleDesc!=null and roleDesc!=''">
+                roleDesc=#{roleDesc},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateRoleEnabledByID">
+        update  set isEnabled =#{value} where id=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteRole" parameterType="int">
+        delete from role where id=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectRoleAll"  resultMap="roleList">
+        select id ,roleId ,roleName ,roleDesc
+        from role
+    </select>
+    <select id="selectRoleAuthorityIdByRoleId" resultType="Integer" parameterType="Integer">
+        select authorityId from roleauthorityrelation where roleId = #{roleId}
+    </select>
+
+    <!--&lt;!&ndash;根据条件查询数据&ndash;&gt;-->
+    <!--<select id="selectRoleByWhere"  parameterType="RoleDTO"  resultMap="roleList">-->
+        <!--select id ,roleId ,roleName ,roleDesc-->
+        <!--from role-->
+        <!--<trim prefix="where" prefixOverrides="and">-->
+            <!--<if test="roleId !=null and roleId>0">-->
+                <!--and roleId=#{roleId}-->
+            <!--</if>-->
+            <!--<if test="roleName!=null and roleName!=''">-->
+                <!--and roleName like CONCAT('%',#{roleName},'%')-->
+            <!--</if>-->
+            <!--<if test="roleDesc!=null and roleDesc!=''">-->
+                <!--and roleDesc like CONCAT('%',#{roleDesc},'%')-->
+            <!--</if>-->
+        <!--</trim>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash;根据条件查询满足条件的记录数&ndash;&gt;-->
+    <!--<select id="selectRoleCountByWhere"  parameterType="RoleDTO" resultType="int">-->
+        <!--select count(id)-->
+        <!--from role-->
+        <!--<trim prefix="where" prefixOverrides="and">-->
+            <!--<if test="roleId !=null and roleId>0">-->
+                <!--and roleId=#{roleId}-->
+            <!--</if>-->
+            <!--<if test="roleName!=null and roleName!=''">-->
+                <!--and roleName like CONCAT('%',#{roleName},'%')-->
+            <!--</if>-->
+            <!--<if test="roleDesc!=null and roleDesc!=''">-->
+                <!--and roleDesc like CONCAT('%',#{roleDesc},'%')-->
+            <!--</if>-->
+        <!--</trim>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash;得到数据表满足查询条件的分页记录&ndash;&gt;-->
+    <!--<select id="selectRoleByPage"  parameterType="RoleDTO" resultMap="roleList">-->
+        <!--select id ,roleId ,roleName ,roleDesc-->
+        <!--from role-->
+        <!--<trim prefix="where" prefixOverrides="and">-->
+            <!--<if test="roleId !=null and roleId>0">-->
+                <!--and roleId=#{roleId}-->
+            <!--</if>-->
+            <!--<if test="roleName!=null and roleName!=''">-->
+                <!--and roleName like CONCAT('%',#{roleName},'%')-->
+            <!--</if>-->
+            <!--<if test="roleDesc!=null and roleDesc!=''">-->
+                <!--and roleDesc like CONCAT('%',#{roleDesc},'%')-->
+            <!--</if>-->
+        <!--</trim>-->
+        <!--LIMIT #{fromTo},#{pageSize}-->
+    <!--</select>-->
+</mapper>
+

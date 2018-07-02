@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.QPaperMapper">
+	<cache></cache>
+	<!-- 结果映射 --> 
+	<resultMap type="QuestionPaper"  id="QPaper">
+	<!--column指向数据库列名   property指向pojo对象中字段名-->  
+		<id property="questionId" column="questionId" />
+		<result property="questionName" column="questionName" />
+		<result property="answerDate" column="answerDate" />
+		<result property="topicCount" column="topicCount" />
+		<result property="sumScore" column="sumScore" />
+		<result property="allocation" column="allocation"/> 
+		<result property="teacherName" column="teacherName"/>
+		<result property="creationDate" column="creationDate"/>
+		<result property="remark" column="remark"/> 
+		<result property="createdBy" column="createdBy"/>
+		<result property="quertionType" column="quertionType"/>
+		<result property="opicTypeName" column="opicTypeName"/>
+	</resultMap>
+
+	<select id="selectQPaperCount" parameterType="QPaperDTO"
+		resultType="int">
+		SELECT COUNT(1) FROM teacher AS t 
+		INNER JOIN questionpaper AS q on t.teacherId=q.createdBy
+		INNER JOIN opictype as o ON q.quertionType=o.opicTypeId
+		<trim prefix="where" prefixOverrides="and">
+			<if test="questionName!=null">
+				and questionName like CONCAT('%',#{questionName},'%')
+			</if>
+			<if test="teacherName!=null">
+				and t.teacherName like ConCat('%',#{teacherName},'%')
+			</if>
+			<if test="quertionType>0">
+				and q.quertionType=#{quertionType}
+			</if>
+			<if test="beginTime!=null and endTime!=null">
+				and creationDate between #{beginTime} and #{endTime}
+			</if>
+		</trim>
+	</select>
+
+	<select id="selectQPaperByPage" parameterType="QPaperDTO"
+		resultMap="QPaper">
+		SELECT t.teacherName,q.questionId,q.questionName,q.quertionType,o.opicTypeName,
+		q.answerDate,q.topicCount,q.sumScore,q.allocation,q.createdBy as qteaid,
+		q.creationDate,q.remark FROM teacher AS t 
+		INNER JOIN questionpaper AS q on t.teacherId=q.createdBy
+		INNER JOIN opictype as o ON q.quertionType=o.opicTypeId
+		<trim prefix="where" prefixOverrides="and">
+			<if test="questionName!=null">
+				and questionName like CONCAT('%',#{questionName},'%')
+			</if>
+			<if test="teacherName!=null">
+				and t.teacherName like ConCat('%',#{teacherName},'%')
+			</if>
+			<if test="quertionType>0">
+				and q.quertionType=#{quertionType}
+			</if>
+			<if test="beginTime!=null and endTime!=null">
+				and creationDate between #{beginTime} and #{endTime}
+			</if>
+		</trim>
+		LIMIT #{fromTo},#{pageSize}
+	</select>
+	<!-- 删除 -->
+	<delete id="deleteQPaper" parameterType="int">
+		delete from questionpaper where questionId=#{questionId}
+	</delete>
+
+	<select id="selectQuestionPaperById" resultType="QuestionPaper">
+
+		SELECT t.teacherName,q.questionId,q.questionName,
+		q.answerDate,q.topicCount,q.sumScore,q.allocation,
+		q.creationDate,q.remark FROM teacher AS t
+		INNER JOIN questionpaper AS q on t.teacherId=q.createdBy where q.questionId=#{questionId}
+
+	</select>
+	
+	<!-- 动态绑定添加试题的下拉框 -->
+	<select id="selectQPaperDropdown" resultMap="QPaper">
+		select questionId,questionName from questionpaper
+	</select>
+	
+	<!-- 向试卷信息表添加数据后，还要向试卷明细表添加数据，需要试卷信息表的主键 -->
+	<insert id="insertQpaper" parameterType="QuestionPaper" useGeneratedKeys="true" keyProperty="questionId">
+		INSERT INTO questionpaper(
+		questionName,answerDate,topicCount,
+		sumScore,allocation,createdBy,
+		creationDate,remark,quertionType) 
+		VALUES (#{questionName},#{answerDate},
+		#{topicCount},#{sumScore},#{allocation},
+		#{createdBy},#{creationDate},#{remark},#{quertionType});
+	</insert>
+
+	<select id="selectQuestionListByClassId" parameterType="integer" resultMap="QPaper">
+		select *  from questionpaper
+		where questionId in(select questionId from customtest where classId=#{classId})
+	</select>
+	<update id="updateQuestion" parameterType="QuestionPaper">
+		update questionpaper set answerDate=#{answerDate},sumScore=#{sumScore},allocation=#{allocation},remark=#{remark} where questionId=#{questionId}
+	</update>
+</mapper>

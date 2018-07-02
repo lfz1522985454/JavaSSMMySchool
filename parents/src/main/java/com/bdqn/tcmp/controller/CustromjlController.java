@@ -1,0 +1,174 @@
+package com.bdqn.tcmp.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.bdqn.tcmp.dto.CustromjlDTO;
+import com.bdqn.tcmp.entity.ClassScore;
+import com.bdqn.tcmp.entity.Custromjl;
+import com.bdqn.tcmp.service.CustromjlService;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequestMapping("custromjl")
+public class CustromjlController {
+
+    @Resource
+    private CustromjlService custromjlService;
+
+    @RequestMapping("inserCustromjl")
+    @ResponseBody
+    public Boolean inserCustromjl(Custromjl obj) {
+
+        return custromjlService.insertCustromjl(obj) > 0 ? true : false;
+    }
+
+    @RequestMapping("selectCustromjlByStudentId")
+    @ResponseBody
+    public List<Custromjl> selectCustromjlByStudentId(Integer studentId) {
+        return custromjlService.selectCustromjlById(studentId);
+    }
+
+    @RequestMapping("selectCustromjlByStuIdAndCustromId")
+    @ResponseBody
+    public List<Custromjl> selectCustromjlByStuIdAndCustromId(Integer studentId, Integer customId) {
+        return custromjlService.selectCustromjlByStuIdAndCustromId(studentId, customId);
+
+    }
+
+    @RequestMapping("selectCustromjlByCustromId")
+    @ResponseBody
+    public List<Custromjl> selectCustromjlByCustromId(Integer customId) {
+        return custromjlService.selectCustromjlByCustromId(customId);
+
+    }
+
+    /**
+     * @param dto
+     * @return 月考
+     */
+    @RequestMapping("selectStudentListAll")
+    @ResponseBody
+    public Map<String, Object> selectParentStudentAll(CustromjlDTO dto) {
+        System.out.println("这是行数" + dto.getRowCount());
+        System.out.println("selectCustromjlPage");
+        Map<String, Object> map = new HashMap<String, Object>();
+        dto.setPageSize(12);
+        dto.setRowCount(this.custromjlService.selectStudentListCount(dto));
+        map.put("page", dto);
+        System.out.println("page");
+        System.out.println(JSON.toJSON(this.custromjlService.selectStudentListAll(dto)));
+        map.put("custoromjlAndStudentList", this.custromjlService.selectStudentListAll(dto));
+        System.out.println(JSON.toJSON(map));
+        return map;
+
+    }
+
+    /**
+     * @param dto
+     * @return 日考
+     */
+    @RequestMapping("selectStudentDayAll")
+    @ResponseBody
+    public Map<String, Object> selectStudentDayAll(CustromjlDTO dto) {
+        System.out.println("这是行数" + dto.getRowCount());
+        System.out.println("selectCustromjlPage");
+        Map<String, Object> map = new HashMap<String, Object>();
+        dto.setPageSize(7);
+        dto.setRowCount(this.custromjlService.selectStudentDayCount(dto));
+        map.put("page", dto);
+        System.out.println("page");
+        System.out.println(JSON.toJSON(this.custromjlService.selectStudentDayAll(dto)));
+        map.put("selectStudentDayAll", this.custromjlService.selectStudentDayAll(dto));
+        System.out.println(JSON.toJSON(map));
+        return map;
+
+    }
+
+    /**
+     * @param dto
+     * @return 折线图
+     */
+    @RequestMapping("/selectStudentCustromjldto.do")
+    @ResponseBody
+    public List<ClassScore> selectStudentCustromjldto(CustromjlDTO dto) {
+        Map<String, Object> maps = new HashMap<String, Object>();
+
+        Map<String, List<Double>> map = new HashMap<String, List<Double>>();//自己拼的数据
+        List<ClassScore> selectScore = new ArrayList<ClassScore>();
+        List<Custromjl> data = this.custromjlService.selectStudentCustromjldto(dto);//data
+        List<Integer> classIdist = new ArrayList<Integer>();//存放所有的班级id
+        for (int i = 0; i < data.size(); i++) {
+            classIdist.add(data.get(i).getStudentId());
+        }
+        List<Integer> tempClassIdList = new ArrayList<Integer>();//不重复的classid
+        for (int i = 0; i < classIdist.size(); i++) {
+            if (!tempClassIdList.contains(classIdist.get(i))) {
+                tempClassIdList.add(classIdist.get(i));
+            }
+        }
+
+        List<List<Custromjl>> lsData = new ArrayList<List<Custromjl>>();//临时存放的list
+
+        for (int i = 0; i < tempClassIdList.size(); i++) {
+            List<Custromjl> asdf = new ArrayList<Custromjl>();
+            for (int j = 0; j < data.size(); j++) {
+                if (tempClassIdList.get(i) == data.get(j).getStudentId()) {
+                    asdf.add(data.get(j));
+                }
+            }
+            lsData.add(asdf);
+        }
+        ClassScore classScore = null;
+        for (int i = 0; i < lsData.size(); i++) {
+            classScore = new ClassScore();
+            List<Double> classAvgs = new ArrayList<Double>();
+            String className = "";
+            for (int k = 1; k <= 12; k++) {
+                boolean iscunzai = false;
+                for (int j = 0; j < lsData.get(i).size(); j++) {
+                    if (k == lsData.get(i).get(j).getMonth()) {
+                        classAvgs.add(lsData.get(i).get(j).getAvg());
+                        className = lsData.get(i).get(j).getStudentName();
+                        iscunzai = true;
+                    }
+                }
+                if (!iscunzai) {
+                    classAvgs.add(0.0);
+                }
+            }
+            map.put(className, classAvgs);
+            classScore.setName(className);
+            classScore.setData(classAvgs);
+            selectScore.add(classScore);
+        }
+        System.out.println(JSON.toJSON(selectScore));
+        return selectScore;
+    }
+
+    /**
+     * @param dto
+     * @return 饼状图
+     */
+    @RequestMapping("/selectStudentBingZhuangTu.do")
+    @ResponseBody
+    public List<Object> selectStudentBingZhuangTu(CustromjlDTO dto) {
+        List<Object> listAll = new ArrayList<Object>();
+        List<Object> lists = new ArrayList<Object>();
+        List<Object> lists2 = new ArrayList<Object>();
+        List<Custromjl> list = this.custromjlService.selectStudentBingZhuangTu(dto);
+        lists.add("未通过率");
+        lists.add(Integer.parseInt(list.get(0).getWjgsl()));
+        lists2.add("通过率");
+        lists2.add(Integer.parseInt(list.get(0).getJgsl()));
+        listAll.add(lists);
+        listAll.add(lists2);
+        return listAll;
+    }
+}

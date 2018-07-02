@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.EvaluationMapper">
+        <resultMap id="evaluationInfo" type="Evaluation">
+                <id property="evaluationId" column="evaluationId"/>
+                <result property="evaluationType" column="evaluationType"/>
+                <result property="questionId" column="questionId"/>
+                <result property="comments" column="comments"/>
+                <result property="sendType" column="sendType"/>
+                <result property="evaluationDate" column="evaluationDate"/>
+        </resultMap>
+        <!--依据家长编号，查询出家长对应的孩子的评价列表-->
+        <select id="getCommonsByParentId" parameterType="evaluationDTO" resultMap="evaluationInfo">
+            select * from evaluation
+            where evaluationID in(select evaluationID from evaluationdetail where parentID=#{parentId})
+            <if test="startDate!=null and endDate!=null">
+                and evaluationDate between#{startDate} and #{endDate}
+            </if>
+            order by evaluationDate DESC
+        </select>
+</mapper>

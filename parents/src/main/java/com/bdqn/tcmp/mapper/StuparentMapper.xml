@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.StuparentMapper">
+    <resultMap type="Stuparent" id="stuparentList">
+        <id column="stuParentID" property="stuParentID"/>
+        <result column="studentID" property="studentID"/><!---->
+        <result column="parentID" property="parentID"/><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertStuparent" parameterType="Stuparent">
+        insert into stuparent
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentID !=null and studentID>0">
+                studentID,
+            </if>
+            <if test="parentID !=null and parentID>0">
+                parentID,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="studentID !=null and studentID>0">
+                #{studentID},
+            </if>
+            <if test="parentID !=null and parentID>0">
+                #{parentID},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectStuparentByID" parameterType="int" resultMap="stuparentList">
+        select stuParentID ,studentID ,parentID
+        from stuparent where stuParentID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateStuparent" parameterType="Stuparent">
+        update stuparent
+        <trim prefix="set" suffix="where stuParentID=#{stuParentID}" suffixOverrides=",">
+            <if test="studentID !=null and studentID>0">
+                studentID=#{studentID},
+            </if>
+            <if test="parentID !=null and parentID>0">
+                parentID=#{parentID},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateStuparentEnabledByID">
+        update  set isEnabled =#{value} where stuParentID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteStuparent" parameterType="int">
+        delete from stuparent where stuParentID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectStuparentAll" resultMap="stuparentList">
+        select stuParentID ,studentID ,parentID
+        from stuparent
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectStuparentByWhere" parameterType="StuparentDTO" resultMap="stuparentList">
+        select stuParentID ,studentID ,parentID
+        from stuparent
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentID !=null and studentID>0">
+                and studentID=#{studentID}
+            </if>
+            <if test="parentID !=null and parentID>0">
+                and parentID=#{parentID}
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectStuparentCountByWhere" parameterType="StuparentDTO" resultType="int">
+        select count(stuParentID)
+        from stuparent
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentID !=null and studentID>0">
+                and studentID=#{studentID}
+            </if>
+            <if test="parentID !=null and parentID>0">
+                and parentID=#{parentID}
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectStuparentByPage" parameterType="StuparentDTO" resultMap="stuparentList">
+        select stuParentID ,studentID ,parentID
+        from stuparent
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentID !=null and studentID>0">
+                and studentID=#{studentID}
+            </if>
+            <if test="parentID !=null and parentID>0">
+                and parentID=#{parentID}
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+
+    <select id="selectStuparentByStuId" resultMap="stuparentList" parameterType="int">
+            select s.studentName,p.parentName from stuparent as sp
+    INNER JOIN student as s on sp.studentID=s.studentId
+    INNER JOIN parent as p on sp.parentID=p.parentId where p.parentId=#{id}
+    </select>
+</mapper>
+

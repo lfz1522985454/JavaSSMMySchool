@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.NoticeMapper">
+    <cache></cache>
+    <resultMap type="Notice" id="noticeList">
+        <id column="noticeID" property="noticeID"/>
+        <result column="noticeTitle" property="noticeTitle"/><!--公告标题-->
+        <result column="noticePic" property="noticePic"/><!--图片-->
+        <result column="attachment" property="attachment"/><!--附件-->
+        <result column="createDate" property="createDate"/><!--发布时间-->
+        <result column="visibleLevel" property="visibleLevel"/><!--可见级别-->
+        <result column="informWay" property="informWay"/><!--通知方式-->
+        <result column="content" property="content"/><!---->
+        <result column="teacherID" property="teacherID"/><!--发布人-->
+        <result column="teacherName" property="teacherName"/><!--发布人-->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertNotice" parameterType="Notice">
+        insert into notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noticeTitle!=null and noticeTitle!=''">
+                noticeTitle,
+            </if>
+            <if test="noticePic!=null and noticePic!=''">
+                noticePic,
+            </if>
+            <if test="attachment!=null and attachment!=''">
+                attachment,
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate,
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                visibleLevel,
+            </if>
+            <if test="informWay!=null and informWay!=''">
+                informWay,
+            </if>
+            <if test="content!=null and content!=''">
+                content,
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                teacherID,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="noticeTitle!=null and noticeTitle!=''">
+                #{noticeTitle},
+            </if>
+            <if test="noticePic!=null and noticePic!=''">
+                #{noticePic},
+            </if>
+            <if test="attachment!=null and attachment!=''">
+                #{attachment},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                #{createDate},
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                #{visibleLevel},
+            </if>
+            <if test="informWay!=null and informWay!=''">
+                #{informWay},
+            </if>
+            <if test="content!=null and content!=''">
+                #{content},
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                #{teacherID},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectNoticeByID" parameterType="int" resultType="Notice">
+         select noticeID,noticeTitle,noticePic,attachment,DATE_FORMAT(createDate,'%Y/%m/%d %H:%i:%s')as createDate,visibleLevel,informWay,content,teacherID from notice where noticeID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateNotice" parameterType="Notice">
+        update notice
+        <trim prefix="set" suffix="where noticeID=#{noticeID}" suffixOverrides=",">
+            <if test="noticeTitle!=null and noticeTitle!=''">
+                noticeTitle=#{noticeTitle},
+            </if>
+            <if test="noticePic!=null and noticePic!=''">
+                noticePic=#{noticePic},
+            </if>
+            <if test="attachment!=null and attachment!=''">
+                attachment=#{attachment},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate=#{createDate},
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                visibleLevel=#{visibleLevel},
+            </if>
+            <if test="informWay!=null and informWay!=''">
+                informWay=#{informWay},
+            </if>
+            <if test="content!=null and content!=''">
+                content=#{content},
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                teacherID=#{teacherID},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateNoticeEnabledByID">
+        update  set isEnabled =#{value} where noticeID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteNotice" parameterType="int">
+        delete from notice where noticeID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectNoticeAll" resultMap="noticeList">
+        select noticeID ,noticeTitle ,noticePic ,attachment ,createDate ,visibleLevel ,informWay ,content ,teacherID
+        from notice
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectNoticeByWhere" parameterType="NoticeDTO" resultMap="noticeList">
+        select noticeID ,noticeTitle ,noticePic ,attachment ,createDate ,visibleLevel ,informWay ,content ,teacherID
+        from notice
+        <trim prefix="where" prefixOverrides="and">
+            <if test="noticeTitle!=null and noticeTitle!=''">
+                and noticeTitle like CONCAT('%',#{noticeTitle},'%')
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                and teacherID=#{teacherID}
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectNoticeCountByWhere" parameterType="NoticeDTO" resultType="int">
+        select count(noticeID)
+        FROM
+        notice AS n
+        LEFT JOIN teacher AS t ON t.teacherId = n.teacherID
+        <trim prefix="where" prefixOverrides="and">
+            <if test="noticeTitle!=null and noticeTitle!=''">
+                and noticeTitle like CONCAT('%',#{noticeTitle},'%')
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                and visibleLevel like CONCAT('%',#{visibleLevel},'%')
+            </if>
+            <if test="informWay!=null and informWay!=''">
+                and informWay like CONCAT('%',#{informWay},'%')
+            </if>
+            <if test="teacherName !=null and teacherName!=''">
+                and teacherName like CONCAT('%',#{teacherName},'%')
+            </if>
+        </trim>
+        ORDER BY createDate DESC
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectNoticeByPage" parameterType="NoticeDTO" resultMap="noticeList">
+        SELECT n.noticeID, n.noticeTitle, n.noticePic, n.attachment, n.createDate, n.visibleLevel, n.informWay,
+        n.content, n.teacherID, t.teacherName FROM
+        notice AS n
+        LEFT JOIN teacher AS t ON t.teacherId = n.teacherID
+        <trim prefix="where" prefixOverrides="and">
+            <if test="noticeTitle!=null and noticeTitle!=''">
+                and noticeTitle like CONCAT('%',#{noticeTitle},'%')
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                and visibleLevel like CONCAT('%',#{visibleLevel},'%')
+            </if>
+            <if test="informWay!=null and informWay!=''">
+                and informWay like CONCAT('%',#{informWay},'%')
+            </if>
+            <if test="teacherName !=null and teacherName!=''">
+                and teacherName like CONCAT('%',#{teacherName},'%')
+            </if>
+        </trim>
+        ORDER BY createDate DESC
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+</mapper>
+

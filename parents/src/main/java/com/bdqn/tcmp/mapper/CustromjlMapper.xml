@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.CustromjlMapper">
+    <select id="selectStudentListAll" parameterType="custromjlDTO" resultType="custromjl">
+        SELECT
+        stu.studentName,
+        qp.questionName,
+        qp.sumScore,
+        jl.score,
+        (qp.sumScore * 0.6) AS jj,
+        ct.creationDate
+        FROM
+        questionpaper AS qp
+        INNER JOIN customtest AS ct ON ct.questionId = qp.questionId
+        INNER JOIN custromjl AS jl ON jl.customId = ct.customId
+        INNER JOIN student AS stu ON stu.studentId = jl.studentId
+        INNER JOIN stuparent AS stup ON stup.studentID = stu.studentId
+        INNER JOIN parent AS par ON par.parentId = stup.parentID
+        WHERE
+        par.parentId = #{parentId}
+        AND ct.examType = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ct.creationDate BETWEEN #{beginTime}
+            AND #{endTime}
+        </if>
+        ORDER BY ct.creationDate DESC
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <select id="selectStudentListCount" resultType="int" parameterType="custromjlDTO">
+        select count(*) as recordCount from(
+        SELECT
+        stu.studentName,
+        qp.questionName,
+        qp.sumScore,
+        jl.score,
+        (qp.sumScore * 0.6) AS jj,
+        ct.creationDate
+        FROM
+        questionpaper AS qp
+        INNER JOIN customtest AS ct ON ct.questionId = qp.questionId
+        INNER JOIN custromjl AS jl ON jl.customId = ct.customId
+        INNER JOIN student AS stu ON stu.studentId = jl.studentId
+        INNER JOIN stuparent AS stup ON stup.studentID = stu.studentId
+        INNER JOIN parent AS par ON par.parentId = stup.parentID
+        WHERE
+        par.parentId = #{parentId}
+        AND ct.examType = 3
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ct.creationDate BETWEEN #{beginTime}
+            AND #{endTime}
+        </if>
+        )temp
+    </select>
+    <!-- 折线图 -->
+    <select id="selectStudentCustromjldto" parameterType="custromjlDTO" resultType="custromjl">
+
+       SELECT
+	l.studentId,
+	avg(l.score) AS avg,
+	stl.studentName,
+par.parentName,
+	DATE_FORMAT(ct.creationDate, '%m') AS MONTH
+FROM
+	questionpaper AS q
+INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+INNER JOIN class AS clas ON clas.classId = ct.classId
+INNER JOIN custromjl AS l ON l.customId = ct.customId
+INNER JOIN student AS stl ON stl.studentId = l.studentId
+INNER JOIN stuparent AS stus ON stl.studentId = stus.studentID
+INNER JOIN parent as par on par.parentId=stus.parentID
+WHERE
+	 DATE_FORMAT(ct.creationDate, '%y') = DATE_FORMAT(NOW(), '%y') and par.parentId=#{parentId} and ct.examType=3
+GROUP BY
+	l.studentId,
+	l.customId
+ORDER BY
+	avg(l.score) DESC
+    </select>
+    <select id="selectStudentBingZhuangTu" parameterType="custromjlDTO" resultType="custromjl">
+        SELECT
+        l.studentId,
+        (
+        count(q.questionId) - (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType = 3
+        AND jl.studentId = #{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ctt.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+
+        )
+        ) AS wjgsl,
+        (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType = 3
+        AND jl.studentId = #{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ctt.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+        ) AS jgsl
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+        INNER JOIN custromjl AS l ON l.customId = ct.customId
+        WHERE
+        ct.examType = 3
+        AND l.studentId = #{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ct.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+        GROUP BY
+        l.studentId
+
+    </select>
+
+    <select id="selectStudentDayAll" parameterType="custromjlDTO" resultType="custromjl">
+        SELECT
+        stu.studentName,
+        qp.questionName,
+        qp.sumScore,
+        jl.score,
+        (qp.sumScore * 0.6) AS jj,
+        ct.creationDate
+        FROM
+        questionpaper AS qp
+        INNER JOIN customtest AS ct ON ct.questionId = qp.questionId
+        INNER JOIN custromjl AS jl ON jl.customId = ct.customId
+        INNER JOIN student AS stu ON stu.studentId = jl.studentId
+        INNER JOIN stuparent AS stup ON stup.studentID = stu.studentId
+        INNER JOIN parent AS par ON par.parentId = stup.parentID
+        WHERE
+        par.parentId = #{parentId}
+        AND ct.examType = 1
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ct.creationDate BETWEEN #{beginTime}
+            AND #{endTime}
+        </if>
+        ORDER BY ct.creationDate DESC
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <select id="selectStudentDayCount" parameterType="custromjlDTO" resultType="int">
+        select count(*) as recordCount from(
+        SELECT
+        stu.studentName,
+        qp.questionName,
+        qp.sumScore,
+        jl.score,
+        (qp.sumScore * 0.6) AS jj,
+        ct.creationDate
+        FROM
+        questionpaper AS qp
+        INNER JOIN customtest AS ct ON ct.questionId = qp.questionId
+        INNER JOIN custromjl AS jl ON jl.customId = ct.customId
+        INNER JOIN student AS stu ON stu.studentId = jl.studentId
+        INNER JOIN stuparent AS stup ON stup.studentID = stu.studentId
+        INNER JOIN parent AS par ON par.parentId = stup.parentID
+        WHERE
+        par.parentId = #{parentId}
+        AND ct.examType = 1
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ct.creationDate BETWEEN #{beginTime}
+            AND #{endTime}
+        </if>
+        )temp
+    </select>
+</mapper>

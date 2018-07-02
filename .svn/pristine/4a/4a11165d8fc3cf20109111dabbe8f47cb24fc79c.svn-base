@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.BlogMapper">
+    <cache></cache>
+    <resultMap type="Blog" id="blogList">
+        <id column="blogID" property="blogID" />
+        <result column="title" property="title" /><!--标题-->
+        <result column="articleType" property="articleType" /><!--文章类型-->
+        <result column="blogType" property="blogType" /><!--博客分类-->
+        <result column="summary" property="summary" /><!--摘要-->
+        <result column="studentID" property="studentID" /><!--学生编号-->
+        <result column="teacherID" property="teacherID" /><!--老师编号-->
+        <result column="thumbnail" property="thumbnail" /><!--缩略图-->
+        <result column="content" property="content" /><!--内容-->
+        <result column="clickCount" property="clickCount" /><!--点击次数-->
+        <result column="isRecommended" property="isRecommended" /><!--是否推荐-->
+        <result column="isTop" property="isTop" /><!--是否置顶-->
+        <result column="isEnabled" property="isEnabled" /><!--是否启用-->
+        <result column="createDate" property="createDate" /><!--创建日期-->
+        <result column="classId" property="classId"></result>
+        <!--关于连表-->
+        <result column="teacherId" property="teacherId"></result><!--老师-->
+        <result column="teacherName" property="teacherName"></result>
+        <result column="studentId" property="studentId"></result>
+        <result column="studentName" property="studentName"></result>
+        <result column="dictionaryID" property="dictionaryID"></result>
+        <result column="articleName" property="articleName"></result>
+        <result column="blogName" property="blogName"></result>
+        <result column="className" property="className"></result>
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertBlog" parameterType="Blog">
+        insert into blog
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title!=null and title!=''">
+                title,
+            </if>
+            <if test="articleType !=null and articleType>0">
+                articleType,
+            </if>
+            <if test="blogType !=null and blogType>0">
+                blogType,
+            </if>
+            <if test="summary!=null and summary!=''">
+                summary,
+            </if>
+            <if test="studentID !=null and studentID>0">
+                studentID,
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                teacherID,
+            </if>
+            <if test="thumbnail!=null and thumbnail!=''">
+                thumbnail,
+            </if>
+            <if test="content!=null and content!=''">
+                content,
+            </if>
+            <if test="clickCount !=null and clickCount>0">
+                clickCount,
+            </if>
+            <if test="isRecommended !=null and isRecommended>0">
+                isRecommended,
+            </if>
+            <if test="isTop !=null and isTop>0">
+                isTop,
+            </if>
+            <if test="isEnabled !=null and isEnabled>0">
+                isEnabled,
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate,
+            </if>
+            <if test="classId!=null and classId!=''">
+                classId,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="title!=null and title!=''">
+                #{title},
+            </if>
+            <if test="articleType !=null and articleType>0">
+                #{articleType},
+            </if>
+            <if test="blogType !=null and blogType>0">
+                #{blogType},
+            </if>
+            <if test="summary!=null and summary!=''">
+                #{summary},
+            </if>
+            <if test="studentID !=null and studentID>0">
+                #{studentID},
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                #{teacherID},
+            </if>
+            <if test="thumbnail!=null and thumbnail!=''">
+                #{thumbnail},
+            </if>
+            <if test="content!=null and content!=''">
+                #{content},
+            </if>
+            <if test="clickCount !=null and clickCount>0">
+                #{clickCount},
+            </if>
+            <if test="isRecommended !=null and isRecommended>0">
+                #{isRecommended},
+            </if>
+            <if test="isTop !=null and isTop>0">
+                #{isTop},
+            </if>
+            <if test="isEnabled !=null and isEnabled>0">
+                #{isEnabled},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                #{createDate},
+            </if>
+            <if test="classId!=null and classId!=''">
+                #{classId},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectBlogByID" parameterType="int"  resultMap="blogList">
+        select blogID ,title ,articleType ,blogType ,summary ,studentID ,teacherID ,thumbnail ,content ,clickCount ,isRecommended ,isTop ,isEnabled ,createDate,classId
+        from blog where blogID=#{id}
+    </select>
+
+    <!--修改数据-->
+<!--    <update id="updateBlog" parameterType="Blog">
+        update blog
+        <trim prefix="set" suffix="where blogID=#{blogID}" suffixOverrides=",">
+            <if test="title!=null and title!=''">
+                title=#{title},
+            </if>
+            <if test="articleType !=null and articleType>0">
+                articleType=#{articleType},
+            </if>
+            <if test="blogType !=null and blogType>0">
+                blogType=#{blogType},
+            </if>
+            <if test="summary!=null and summary!=''">
+                summary=#{summary},
+            </if>
+            <if test="studentID !=null and studentID>0">
+                studentID=#{studentID},
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                teacherID=#{teacherID},
+            </if>
+            <if test="thumbnail!=null and thumbnail!=''">
+                thumbnail=#{thumbnail},
+            </if>
+            <if test="content!=null and content!=''">
+                content=#{content},
+            </if>
+            <if test="clickCount !=null and clickCount>0">
+                clickCount=#{clickCount},
+            </if>
+            <if test="isRecommended !=null and isRecommended>0">
+                isRecommended=#{isRecommended},
+            </if>
+            <if test="isTop !=null and isTop>0">
+                isTop=#{isTop},
+            </if>
+            <if test="isEnabled !=null and isEnabled>0">
+                isEnabled=#{isEnabled},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate=#{createDate},
+            </if>
+        </trim>
+    </update>-->
+
+    <!--修改的启用状态-->
+<!--    <update id="updateBlogEnabledByID">
+        update  set isEnabled =#{value} where blogID=#{id}
+    </update>-->
+
+    <!--删除指定主键的数据-->
+  <!--  <delete id="deleteBlog" parameterType="int">
+        delete from blog where blogID=#{id}
+    </delete>-->
+
+    <!--查询全部数据-->
+    <select id="selectBlogAll"  resultMap="blogList">
+         SELECT
+        b.blogID,
+        b.title,
+        b.articleType,
+        b.blogType,
+        b.summary,
+        b.studentID,
+        b.teacherID,
+        b.thumbnail,
+        b.content,
+        b.clickCount,
+        b.isRecommended,
+        b.isTop,
+        b.isEnabled,
+        b.createDate,
+        d.dictionaryID,
+        d.articleName,
+        d.blogName,
+        t.teacherName,
+        s.studentName,
+        t.teacherId,
+        s.studentId
+
+        FROM
+        blog AS b
+        INNER JOIN dictionary AS d ON b.articleType = d.dictionaryID
+        INNER JOIN teacher AS t ON b.teacherID = t.teacherId
+        INNER JOIN student AS s ON b.studentID = s.studentId
+        ORDER BY
+        b.createDate ASC
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectBlogByWhere"  parameterType="BlogDTO"  resultMap="blogList">
+        SELECT
+        b.blogID,
+        b.title,
+        b.articleType,
+        b.blogType,
+        b.summary,
+        b.studentID,
+        b.teacherID,
+        b.thumbnail,
+        b.content,
+        b.clickCount,
+        b.isRecommended,
+        b.isTop,
+        b.isEnabled,
+        b.createDate,
+        b.classId,
+        d.dictionaryID,
+        d.articleName,
+        d.blogName,
+        t.teacherName,
+        s.studentName,
+        t.teacherId,
+        s.studentId,
+        l.classId,
+        l.className
+        FROM
+        blog AS b
+        INNER JOIN dictionary AS d ON b.articleType = d.dictionaryID
+        INNER JOIN teacher AS t ON b.teacherID = t.teacherId
+        INNER JOIN student AS s ON b.studentID = s.studentId
+        INNER JOIN class AS l ON b.classId=l.classId
+        ORDER BY
+        b.createDate ASC ;
+        <trim prefix="where" prefixOverrides="and">
+            <if test="title!=null and title!=''">
+                and title like CONCAT('%',#{title},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectBlogCountByWhere"  parameterType="BlogDTO" resultType="int">
+        select count(1)
+        from blog
+        <trim prefix="where" prefixOverrides="and">
+            <if test="title!=null and title!=''">
+                and title like CONCAT('%',#{title},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectBlogByPage"  parameterType="BlogDTO" resultMap="blogList">
+        SELECT
+        b.blogID,
+        b.title,
+        b.articleType,
+        b.blogType,
+        b.summary,
+        b.studentID,
+        b.teacherID,
+        b.thumbnail,
+        b.content,
+        b.clickCount,
+        b.isRecommended,
+        b.isTop,
+        b.isEnabled,
+        b.createDate,
+        d.dictionaryID,
+        d.articleName,
+        d.blogName,
+        t.teacherName,
+        s.studentName,
+        t.teacherId,
+        s.studentId
+
+        FROM
+        blog AS b
+        INNER JOIN dictionary AS d ON b.articleType = d.dictionaryID
+        INNER JOIN teacher AS t ON b.teacherID = t.teacherId
+        INNER JOIN student AS s ON b.studentID = s.studentId
+        ORDER BY
+        b.createDate ASC
+        <trim prefix="where" prefixOverrides="and">
+            <if test="title!=null and title!=''">
+                and title like CONCAT('%',#{title},'%')
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+</mapper>

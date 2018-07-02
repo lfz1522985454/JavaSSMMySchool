@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.QuestiondetailMapper">
+	<cache />
+	<!-- 对象存储 -->
+	<resultMap type="Questiondetail" id="QuestiondetailList">
+		<id column="detailId" property="detailId" />
+		<result column="questionId" property="questionId" />
+		<result column="topicId" property="topicId" />
+		<result column="skillId" property="skillId" />
+		<result column="opicTypeId" property="opicTypeId" />
+		<result column="topicName" property="topicName" />
+		<result column="topicImg" property="topicImg" />
+		<result column="optionA" property="optionA" />
+		<result column="optionB" property="optionB" />
+		<result column="optionC" property="optionC" />
+		<result column="optionD" property="optionD" />
+		<result column="optionE" property="optionE" />
+		<result column="optionF" property="optionF" />
+		<result column="modelAnswer" property="modelAnswer" />
+		<result column="topicAnalysis" property="topicAnalysis" />
+		<result column="topicErroCount" property="topicErroCount" />
+		<result column="createtionDate" property="createtionDate" />
+		<result column="createdBy" property="createdBy" />
+		<result column="isEnabled" property="isEnabled" />
+		<result column="isStamp" property="isStamp" />
+		<result column="stampBy" property="stampBy" />
+		<result column="answerDate" property="answerDate"/>
+	</resultMap>
+	<!-- 查询全部 -->
+	<select id="selectQuestiondetailByQuestionId"  resultMap="QuestiondetailList">
+		SELECT *
+		FROM questiondetail as q 
+		INNER JOIN topic as t on q.topicId=t.topicId
+		INNER JOIN questionpaper as qu on qu.questionId=q.questionId
+		where q.questionId=#{questionId}
+	</select>
+
+</mapper>

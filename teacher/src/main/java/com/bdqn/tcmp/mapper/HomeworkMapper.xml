@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.HomeworkMapper">
+    <cache></cache>
+    <resultMap type="Homework" id="homeworkList">
+        <id column="workid" property="workid"/>
+        <result column="workname" property="workname"/><!---->
+        <result column="classid" property="classid"/><!---->
+        <result column="remark" property="remark"/><!---->
+        <result column="workdetail" property="workdetail"/><!---->
+        <result column="sendType" property="sendType"/><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertHomework" parameterType="Homework_WorkHistory" >
+        insert into homework
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workname!=null and workname!=''">
+                workname,
+            </if>
+            <if test="classid !=null and classid>0">
+                classid,
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark,
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                workdetail,
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                sendType,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="workname!=null and workname!=''">
+                #{workname},
+            </if>
+            <if test="classid !=null and classid>0">
+                #{classid},
+            </if>
+            <if test="remark!=null and remark!=''">
+                #{remark},
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                #{workdetail},
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                #{sendType},
+            </if>
+        </trim>
+    </insert>
+    <!--向插入数据返回id-->
+    <insert id="insertHomeworkReturnId" parameterType="Homework_WorkHistory" useGeneratedKeys="true" keyProperty="workid">
+        insert into homework
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workname!=null and workname!=''">
+                workname,
+            </if>
+            <if test="classid !=null and classid>0">
+                classid,
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark,
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                workdetail,
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                sendType,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="workname!=null and workname!=''">
+                #{workname},
+            </if>
+            <if test="classid !=null and classid>0">
+                #{classid},
+            </if>
+            <if test="remark!=null and remark!=''">
+                #{remark},
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                #{workdetail},
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                #{sendType},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectHomeworkByID" parameterType="int" resultMap="homeworkList">
+		select workid ,workname ,classid ,remark ,workdetail ,sendType
+		from homework where workid=#{id}
+	</select>
+
+    <select id="selectHomeworkByClassIdAndStage" resultType="Homework">
+		select workid ,workname ,classid ,remark ,workdetail ,sendType,stage
+		from homework where classid=#{classId} and stage=#{stage}
+	</select>
+
+    <!--修改数据-->
+    <update id="updateHomework" parameterType="Homework">
+        update homework
+        <trim prefix="set" suffix="where workid=#{workid}" suffixOverrides=",">
+            <if test="workname!=null and workname!=''">
+                workname=#{workname},
+            </if>
+            <if test="classid !=null and classid>0">
+                classid=#{classid},
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark=#{remark},
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                workdetail=#{workdetail},
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                sendType=#{sendType},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateHomeworkEnabledByID">
+		update  set isEnabled =#{value} where workid=#{id}
+	</update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteHomework" parameterType="int">
+		delete from homework where workid=#{id}
+	</delete>
+
+    <!--查询全部数据-->
+    <select id="selectHomeworkAll" resultMap="homeworkList">
+		select workid ,workname ,classid ,remark ,workdetail ,sendType
+		from homework
+	</select>
+
+    <!--根据条件查询数据-->
+    <select id="selectHomeworkByWhere" parameterType="HomeworkDTO" resultMap="homeworkList">
+        select workid ,workname ,classid ,remark ,workdetail ,sendType
+        from homework
+        <trim prefix="where" prefixOverrides="and">
+            <if test="workname!=null and workname!=''">
+                and workname like CONCAT('%',#{workname},'%')
+            </if>
+            <if test="classid !=null and classid>0">
+                and classid=#{classid}
+            </if>
+            <if test="remark!=null and remark!=''">
+                and remark like CONCAT('%',#{remark},'%')
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                and workdetail like CONCAT('%',#{workdetail},'%')
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                and sendType like CONCAT('%',#{sendType},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectHomeworkCountByWhere" parameterType="HomeworkDTO" resultType="int">
+        select count(workid)
+        from homework
+        <trim prefix="where" prefixOverrides="and">
+            <if test="workname!=null and workname!=''">
+                and workname like CONCAT('%',#{workname},'%')
+            </if>
+            <if test="classid !=null and classid>0">
+                and classid=#{classid}
+            </if>
+            <if test="remark!=null and remark!=''">
+                and remark like CONCAT('%',#{remark},'%')
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                and workdetail like CONCAT('%',#{workdetail},'%')
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                and sendType like CONCAT('%',#{sendType},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectHomeworkByPage" parameterType="HomeworkDTO" resultMap="homeworkList">
+        select workid ,workname ,classid ,remark ,workdetail ,sendType
+        from homework
+        <trim prefix="where" prefixOverrides="and">
+            <if test="workname!=null and workname!=''">
+                and workname like CONCAT('%',#{workname},'%')
+            </if>
+            <if test="classid !=null and classid>0">
+                and classid=#{classid}
+            </if>
+            <if test="remark!=null and remark!=''">
+                and remark like CONCAT('%',#{remark},'%')
+            </if>
+            <if test="workdetail!=null and workdetail!=''">
+                and workdetail like CONCAT('%',#{workdetail},'%')
+            </if>
+            <if test="sendType!=null and sendType!=''">
+                and sendType like CONCAT('%',#{sendType},'%')
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+
+    <select id="selectHomeworkByClassID" resultMap="homeworkList">
+        select  workid,workname from homework where classid=#{classId}
+    </select>
+
+</mapper>
+

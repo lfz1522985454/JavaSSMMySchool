@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.QDetailMapper">
+	<cache></cache>
+	<!-- 对象存储 -->
+	<resultMap type="QuestionDetail" id="QuestiondetailList">
+		<id column="detailId" property="detailId" />
+		<result column="questionId" property="questionId" />
+		<result column="topicId" property="topicId" />
+		<result column="skillId" property="skillId" />
+
+	</resultMap>
+
+	<insert id="insertQuestionDetail" parameterType="Questiondetail">
+		INSERT INTO
+		questiondetail (questionId, skillId, topicId) VALUES
+		(
+		#{questionId},#{skillId},#{topicId}
+		);
+	</insert>
+	
+	<select id="selectQuestionDetailByTopicId" parameterType="int" resultType="int">
+		select topicId from questiondetail where topicId=#{topicId}
+	</select>
+
+</mapper>

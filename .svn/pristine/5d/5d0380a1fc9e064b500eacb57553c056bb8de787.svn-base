@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.CustromjlMapper">
+
+    <resultMap type="Custromjl" id="CustromjlList">
+        <id column="testId" property="testId"/>
+        <result column="customId" property="customId"/>
+        <result column="studentId" property="studentId"/>
+        <result column="studentName" property="studentName"/>
+        <result column="questionId" property="questionId"/>
+        <result column="questionName" property="questionName"/>
+        <result column="startDate" property="startDate"/>
+        <result column="endDate" property="endDate"/>
+        <result column="teacherName" property="teacherName"/>
+        <result column="opicTypeId" property="opicTypeId"/>
+        <result column="opicTypeName" property="opicTypeName"/>
+        <result column="score" property="score"/>
+    </resultMap>
+    <insert id="insertCustromjl" parameterType="Custromjl">
+        insert into
+        Custromjl(customId,studentId,score)
+        values(#{customId},#{studentId},#{score})
+    </insert>
+    <select id="selectCustromjlById" resultMap="CustromjlList">
+        SELECT
+        j.customId,
+        c.questionId,
+        q.questionName,
+        c.startDate,
+        c.endDate,
+        t.teacherName,
+        o.opicTypeName,
+        o.opicTypeId,
+        j.studentId,
+        j.score
+        FROM
+        custromjl AS j
+        INNER JOIN customtest AS c
+        ON c.customId = j.customId
+        INNER JOIN
+        questionpaper AS q ON
+        c.questionId = q.questionId
+        INNER JOIN teacher AS
+        t ON c.createdBy =
+        t.teacherId
+        INNER JOIN opictype AS o ON
+        q.quertionType = o.opicTypeId
+        WHERE
+        studentId=#{studentId}
+    </select>
+    <select id="selectCustromjlByStuIdAndCustromId" resultMap="CustromjlList">
+        SELECT customId,score FROM custromjl WHERE studentId=#{studentId} and
+        customId=#{custromId}
+    </select>
+    <select id="selectCustromjlByCustromId" resultMap="CustromjlList">
+        SELECT
+        c.score,s.studentName FROM custromjl as c
+        INNER JOIN student as s on
+        c.studentId=s.studentId
+        WHERE customId=#{custromId} ORDER BY score DESC
+    </select>
+
+
+    <select id="selectStudentListAll" parameterType="custromjlDTO" resultType="custromjl">
+        SELECT
+        q.questionName,
+        t.creationDate,
+        st.studentName,
+        cl.score,
+        st.studentId
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS t ON t.questionId = q.questionId
+        INNER JOIN custromjl AS cl ON cl.customId = t.customId
+        INNER JOIN student AS st ON st.studentId = cl.studentId
+        WHERE
+        st.studentId=#{studentId} and t.examType=1
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            and t.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+        ORDER BY t.creationDate DESC
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <select id="selectStudentListCount" resultType="int" parameterType="custromjlDTO">
+        select count(*) as recordCount from(
+        SELECT
+        q.questionName,
+        t.creationDate,
+        st.studentName,
+        cl.score,
+        st.studentId
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS t ON t.questionId = q.questionId
+        INNER JOIN custromjl AS cl ON cl.customId = t.customId
+        INNER JOIN student AS st ON st.studentId = cl.studentId
+        WHERE
+        st.studentId=#{studentId} and t.examType=1
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            and t.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+        )temp
+    </select>
+    <select id="selectStudentCustromjldto" parameterType="custromjlDTO" resultType="custromjl">
+
+       SELECT
+        l.studentId,
+        avg(l.score) as avg,
+        stl.studentName,DATE_FORMAT( ct.creationDate , '%m' ) as
+        month
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+        INNER JOIN class AS clas ON clas.classId = ct.classId
+        INNER JOIN custromjl AS l ON l.customId = ct.customId
+        INNER JOIN student AS stl ON stl.studentId = l.studentId
+        where ct.examType=1 and l.studentId=#{studentId} and DATE_FORMAT( ct.creationDate , '%y' )=DATE_FORMAT(NOW() , '%y' )
+        GROUP BY
+        l.studentId,l.customId
+        ORDER BY avg(l.score) DESC
+    </select>
+    <select id="selectStudentBingZhuangTu" parameterType="custromjlDTO" resultType="custromjl">
+        SELECT
+        l.studentId,
+        (
+        count(q.questionId) - (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType = 3
+        AND jl.studentId = #{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ctt.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+
+        )
+        ) AS wjgsl,
+        (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType = 3
+        AND jl.studentId = #{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ctt.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+        ) AS jgsl
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+        INNER JOIN custromjl AS l ON l.customId = ct.customId
+        WHERE
+        ct.examType = 3
+        AND l.studentId = #{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND ct.creationDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+        GROUP BY
+        l.studentId
+
+    </select>
+    <select id="selectStudentDayAll" parameterType="custromjlDTO" resultType="custromjl">
+        SELECT
+        s.studentName,
+        s.studentId,
+        l.score,
+        q.sumScore,
+        (q.sumScore*0.6) as jj,
+        q.questionName,
+        t.creationDate
+        FROM
+        customtest AS t
+        INNER JOIN custromjl AS l ON l.customId = t.customId
+        INNER JOIN questionpaper AS q ON q.questionId = t.questionId
+        INNER JOIN student AS s ON s.studentId = l.studentId
+        WHERE
+        t.examType = 3 and s.studentId=#{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND t.creationDate BETWEEN #{beginTime}
+            AND #{endTime}
+        </if>
+        ORDER BY t.creationDate DESC
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <select id="selectStudentDayCount" parameterType="custromjlDTO" resultType="int">
+        SELECT
+        count(*) AS recordCount
+        FROM
+        (
+        SELECT
+        s.studentName,
+        s.studentId,
+        l.score,
+        q.sumScore,
+        (q.sumScore*0.6) as jj,
+        q.questionName,
+        t.creationDate
+        FROM
+        customtest AS t
+        INNER JOIN custromjl AS l ON l.customId = t.customId
+        INNER JOIN questionpaper AS q ON q.questionId = t.questionId
+        INNER JOIN student AS s ON s.studentId = l.studentId
+        WHERE
+        t.examType = 3 and s.studentId=#{studentId}
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            AND t.creationDate BETWEEN #{beginTime}
+            AND #{endTime}
+        </if>
+        ) temp
+    </select>
+
+</mapper>

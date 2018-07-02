@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.EvaluationTeacherMapper">
+    <resultMap type="EvaluationTeacher" id="evaluationTeacherList">
+        <id column="evaluationID" property="evaluationID"/>
+        <result column="teacherID" property="teacherId"/><!---->
+        <result column="teacherName" property="teacherName"/><!---->
+        <result column="createDate" property="createDate"/><!---->
+        <result column="classID" property="classId"/><!---->
+        <result column="className" property="className"/><!---->
+        <result column="advice" property="advice"/><!---->
+        <result column="studentCount" property="studentCount"/><!---->
+        <result column="average" property="average"/><!---->
+        <result column="diffName" property="diffName"/><!---->
+        <result column="state" property="state"/><!---->
+        <result column="maxScore" property="maxScore"/>
+        <result column="minScore" property="minScore"/>
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertEvaluationTeacher" parameterType="EvaluationTeacher">
+        insert into evaluationteacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="teacherId !=null and teacherId>0">
+                teacherID,
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate,
+            </if>
+            <if test="classId !=null and classId>0">
+                classID,
+            </if>
+            <if test="advice!=null and advice!=''">
+                advice,
+            </if>
+            <if test="studentCount !=null and studentCount>=0">
+                studentCount,
+            </if>
+            <if test="average !=null and average>=0">
+                average,
+            </if>
+            <if test="diffName!=null and diffName!=''">
+                diffName,
+            </if>
+            <if test="state!=null and state!=''">
+                state,
+            </if>
+            <if test="maxScore!=null and maxScore>=0">
+                maxScore,
+            </if>
+            <if test="minScore!=null and minScore>=0">
+                minScore,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="teacherId !=null and teacherId>0">
+                #{teacherId},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                #{createDate},
+            </if>
+            <if test="classId !=null and classId>0">
+                #{classId},
+            </if>
+            <if test="advice!=null and advice!=''">
+                #{advice},
+            </if>
+            <if test="studentCount !=null and studentCount>=0">
+                #{studentCount},
+            </if>
+            <if test="average !=null and average>=0">
+                #{average},
+            </if>
+            <if test="diffName!=null and diffName!=''">
+                #{diffName},
+            </if>
+            <if test="state!=null and state!=''">
+                #{state},
+            </if>
+            <if test="maxScore!=null and maxScore>=0">
+                maxScore,
+            </if>
+            <if test="minScore!=null and minScore>=0">
+                minScore,
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectEvaluationTeacherByID" parameterType="int" resultMap="evaluationTeacherList">
+        SELECT e.evaluationID,e.teacherID,e.createDate,e.classID,e.advice,e.studentCount,e.average,e.maxScore,e.minScore,e.diffName,e.state,t.teacherName,c.className FROM evaluationteacher AS e
+        INNER JOIN teacher AS t ON t.teacherId = e.teacherID
+        INNER JOIN class AS c ON c.classId = e.classID
+        WHERE e.evaluationID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateEvaluationTeacher" parameterType="EvaluationTeacher">
+        update evaluationteacher
+        <trim prefix="set" suffix="where evaluationID=#{evaluationID}" suffixOverrides=",">
+            <if test="teacherId !=null and teacherId>0">
+                teacherID=#{teacherId},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate=#{createDate},
+            </if>
+            <if test="classId !=null and classId>0">
+                classID=#{classId},
+            </if>
+            <if test="advice!=null and advice!=''">
+                advice=#{advice},
+            </if>
+            <if test="studentCount !=null and studentCount>0">
+                studentCount=#{studentCount},
+            </if>
+            <if test="average !=null and average>0">
+                average=#{average},
+            </if>
+            <if test="diffName!=null and diffName!=''">
+                diffName=#{diffName},
+            </if>
+            <if test="state!=null and state!=''">
+                state=#{state},
+            </if>
+            <if test="maxScore!=null and maxScore>=0">
+                maxScore=#{maxScore},
+            </if>
+            <if test="minScore!=null and minScore>=0">
+                minScore=#{minScore},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateEvaluationTeacherEnabledByID">
+        update  set isEnabled =#{value} where evaluationID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteEvaluationTeacher" parameterType="int">
+        delete from evaluationteacher where evaluationID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectEvaluationTeacherAll" resultMap="evaluationTeacherList">
+        select evaluationID ,teacherID ,createDate ,classID ,advice ,studentCount ,average ,diffName ,state
+        from evaluationteacher
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectEvaluationTeacherByWhere" parameterType="EvaluationTeacherDTO" resultMap="evaluationTeacherList">
+        select evaluationID ,teacherID ,createDate ,classID ,advice ,studentCount ,average ,diffName ,state
+        from evaluationteacher
+        <trim prefix="where" prefixOverrides="and">
+            <if test="teacherId !=null and teacherId>0">
+                and teacherID=#{teacherID}
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                and createDate like CONCAT('%',#{createDate},'%')
+            </if>
+            <if test="classId !=null and classId>0">
+                and classID=#{classID}
+            </if>
+            <if test="advice!=null and advice!=''">
+                and advice like CONCAT('%',#{advice},'%')
+            </if>
+            <if test="studentCount !=null and studentCount>0">
+                and studentCount=#{studentCount}
+            </if>
+            <if test="average !=null and average>0">
+                and average=#{average}
+            </if>
+            <if test="diffName!=null and diffName!=''">
+                and diffName like CONCAT('%',#{diffName},'%')
+            </if>
+            <if test="state!=null and state!=''">
+                and state like CONCAT('%',#{state},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectEvaluationTeacherCountByWhere" parameterType="EvaluationTeacherDTO" resultType="int">
+        SELECT count(evaluationID)
+        FROM evaluationteacher AS e
+        INNER JOIN teacher AS t ON t.teacherId = e.teacherID
+        LEFT JOIN class AS c ON c.classId = e.classID
+        INNER JOIN dictionarydetail as d on d.detailID=t.dutyId
+        <trim prefix="where" prefixOverrides="and">
+            <if test="teacherName!=null and teacherName!=''">
+                and teacherName like CONCAT('%',#{teacherName},'%')
+            </if>
+
+            <if test="beginDate!=null and beginDate!='' and endDate!=null  and beginDate!=''">
+                and createDate BETWEEN #{beginDate} and #{endDate}
+            </if>
+            <if test="detailID!=0 and detailID>0">
+                and detailID =#{detailID}
+            </if>
+            <if test="state!=null and state!=''">
+                and state =#{state}
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectEvaluationTeacherByPage" parameterType="EvaluationTeacherDTO" resultMap="evaluationTeacherList">
+        SELECT e.evaluationID, e.teacherID, t.teacherName, e.createDate, e.classID, c.className, e.state, d.attrName
+        FROM evaluationteacher AS e
+        INNER JOIN teacher AS t ON t.teacherId = e.teacherID
+        LEFT JOIN class AS c ON c.classId = e.classID
+        INNER JOIN dictionarydetail as d on d.detailID=t.dutyId
+        <trim prefix="where" prefixOverrides="and">
+            <if test="teacherName!=null and teacherName!=''">
+                and teacherName like CONCAT('%',#{teacherName},'%')
+            </if>
+
+            <if test="beginDate!=null and beginDate!='' and endDate!=null  and beginDate!=''">
+                and createDate BETWEEN #{beginDate} and #{endDate}
+            </if>
+            <if test="detailID!=0 and detailID>0">
+                and detailID =#{detailID}
+            </if>
+            <if test="state!=null and state!=''">
+                and state =#{state}
+            </if>
+        </trim>
+        order by createDate Desc
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+
+    <!--查询正在评教的班级信息-->
+    <select id="selectEvaluationTeacher" resultMap="evaluationTeacherList">
+        SELECT e.evaluationID, e.teacherID, t.teacherName, e.createDate, e.classID, c.className, e.state, d.attrName
+        FROM evaluationteacher AS e
+        INNER JOIN teacher AS t ON t.teacherId = e.teacherID
+        LEFT JOIN class AS c ON c.classId = e.classID
+        INNER JOIN dictionarydetail as d on d.detailID=t.dutyId where state='正在进行' ORDER BY createDate desc
+    </select>
+
+    <select id="selectEvaluationTeacherByConditions" resultType="EvaluationTeacher">
+       SELECT count(etID) AS studentCount,avg(score) AS average,max(score) AS maxScore,min(score) AS minScore,evaluationID,(SELECT GROUP_CONCAT(s.studentName SEPARATOR ',') FROM Student AS s LEFT JOIN evateacherdetail AS e ON e.studentID = s.studentID WHERE s.classID =#{classId} AND e.etID IS NULL )as diffName,GROUP_CONCAT(advice SEPARATOR ',')as advice FROM evateacherdetail WHERE evaluationID = #{evaluationID}
+    </select>
+</mapper>
+

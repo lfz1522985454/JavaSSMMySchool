@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.ArticleMapper">
+    <resultMap type="Article" id="articleList">
+        <id column="articleID" property="articleID" />
+        <result column="articleTitle" property="articleTitle" /><!---->
+        <result column="image" property="image" /><!---->
+        <result column="articleContent" property="articleContent" /><!---->
+        <result column="articleType" property="articleType" /><!---->
+        <result column="createDate" property="createDate" /><!---->
+        <result column="author" property="author" /><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertArticle" parameterType="Article">
+        insert into article
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="articleTitle!=null and articleTitle!=''">
+                articleTitle,
+            </if>
+            <if test="image!=null and image!=''">
+                image,
+            </if>
+            <if test="articleContent!=null and articleContent!=''">
+                articleContent,
+            </if>
+            <if test="articleType !=null and articleType>0">
+                articleType,
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate,
+            </if>
+            <if test="author!=null and author!=''">
+                author,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="articleTitle!=null and articleTitle!=''">
+                #{articleTitle},
+            </if>
+            <if test="image!=null and image!=''">
+                #{image},
+            </if>
+            <if test="articleContent!=null and articleContent!=''">
+                #{articleContent},
+            </if>
+            <if test="articleType !=null and articleType>0">
+                #{articleType},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                #{createDate},
+            </if>
+            <if test="author!=null and author!=''">
+                #{author},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectArticleByID" parameterType="int"  resultMap="articleList">
+        select articleID ,articleTitle ,image ,articleContent ,articleType ,createDate ,author
+        from article where articleID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateArticle" parameterType="Article">
+        update article
+        <trim prefix="set" suffix="where articleID=#{articleID}" suffixOverrides=",">
+            <if test="articleTitle!=null and articleTitle!=''">
+                articleTitle=#{articleTitle},
+            </if>
+            <if test="image!=null and image!=''">
+                image=#{image},
+            </if>
+            <if test="articleContent!=null and articleContent!=''">
+                articleContent=#{articleContent},
+            </if>
+            <if test="articleType !=null and articleType>0">
+                articleType=#{articleType},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate=#{createDate},
+            </if>
+            <if test="author!=null and author!=''">
+                author=#{author},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateArticleEnabledByID">
+        update  set isEnabled =#{value} where articleID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteArticle" parameterType="int">
+        delete from article where articleID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectArticleAll"  resultMap="articleList">
+        select articleID ,articleTitle ,image ,articleContent ,articleType ,createDate ,author
+        from article
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectArticleByWhere"  parameterType="ArticleDTO"  resultMap="articleList">
+        select articleID ,articleTitle ,image ,articleContent ,articleType ,createDate ,author
+        from article
+        <trim prefix="where" prefixOverrides="and">
+            <if test="articleTitle!=null and articleTitle!=''">
+                and articleTitle like CONCAT('%',#{articleTitle},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectArticleCountByWhere"  parameterType="ArticleDTO" resultType="int">
+        select count(articleID)
+        from article
+        <trim prefix="where" prefixOverrides="and">
+            <if test="articleTitle!=null and articleTitle!=''">
+                and articleTitle like CONCAT('%',#{articleTitle},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectArticleByPage"  parameterType="ArticleDTO" resultMap="articleList">
+        select articleID ,articleTitle ,image ,articleContent ,articleType ,createDate ,author
+        from article
+        <trim prefix="where" prefixOverrides="and">
+            <if test="articleTitle!=null and articleTitle!=''">
+                and articleTitle like CONCAT('%',#{articleTitle},'%')
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+
+</mapper>
+

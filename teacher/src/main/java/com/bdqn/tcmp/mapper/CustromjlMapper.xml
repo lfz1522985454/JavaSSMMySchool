@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.CustromjlMapper">
+    <cache></cache>
+    <resultMap id="custromjlInfo" type="Custromjl">
+        <id column="testId" property="testId"></id>
+        <result column="studentId" property="studentId"></result>
+        <result column="customId" property="customId"></result>
+        <result column="score" property="score"></result>
+    </resultMap>
+
+    <!--依据班级和考试编号，查询当前班级中每个学生的考试成绩-->
+    <select id="getCustromjlListByClassId" resultMap="custromjlInfo">
+        select * from Custromjl
+        where customId=(select customId from customtest where questionId =#{questionId} and classId=#{classId})
+        order by score DESC
+    </select>
+    <!-- 这个是教员所教班级班级考试总行数 -->
+    <select id="selectCustromjlCount" parameterType="custromjlDTO" resultType="int">
+        select count(*) as recordCount from(
+        select avg(j.score) as avg,j.customId, DATE_FORMAT( t.startDate , '%m' ) as
+        month,c.classId,t.startDate,c.className,MAX(j.score) as
+        max,MIN(j.score) as min,q.questionName ,stu.studentId,
+        sum(j.score)
+        from customtest t
+        inner join custromjl j on
+        t.customId=j.customId
+        INNER JOIN questionpaper as q on
+        q.questionId=t.questionId
+        inner join student stu on
+        j.studentId=stu.studentId
+        INNER JOIN class as c on t.classId=c.classId
+        where t.examType=3
+        <trim prefix="and" suffixOverrides="and">
+            <if test="classId!=null and classId>0">
+                c.classId=#{classId} and
+            </if>
+            <if test="teacherId!=null and teacherId>0">
+                c.teacherId=#{teacherId} and
+            </if>
+            <if test="beginTime!=null and beginTime!=null and endTime!=null and endTime!=''">
+                t.startDate between #{beginTime} and #{endTime}
+            </if>
+        </trim>
+        group by j.customId
+        ) temp
+    </select>
+    <!--这个我是班级总题数-->
+    <select id="selectCustromjldto" parameterType="custromjlDTO"
+            resultType="custromjl">
+        select avg(j.score) as avg,j.customId, DATE_FORMAT( t.startDate , '%m' ) as
+        month,c.classId,t.startDate,c.className,MAX(j.score) as
+        max,MIN(j.score) as min,q.questionName,t.classId ,stu.studentId,
+        sum(j.score)
+        from customtest t
+        inner join custromjl j on
+        t.customId=j.customId
+        INNER JOIN questionpaper as q on
+        q.questionId=t.questionId
+        inner join student stu on
+        j.studentId=stu.studentId
+        INNER JOIN class as c on t.classId=c.classId
+        where t.examType=3
+        <trim prefix="and" suffixOverrides="and">
+            <if test="classId!=null and classId>0">
+                c.classId=#{classId} and
+            </if>
+            <if test="teacherId!=null and teacherId>0">
+                c.teacherId=#{teacherId} and
+            </if>
+            <if test="beginTime!=null and beginTime!=null and endTime!=null and endTime!=''">
+                t.startDate between #{beginTime} and #{endTime}
+            </if>
+        </trim>
+        group by j.customId
+        order by DATE_FORMAT( t.startDate , '%m' ) asc
+    </select>
+
+    <!--这个班级的历来月考次数,加分页-->
+    <select id="selectCustromjlPage" parameterType="custromjlDTO"
+            resultType="custromjl">
+        select avg(j.score) as avg,j.customId, DATE_FORMAT( t.startDate , '%m' ) as
+        month,c.classId,t.startDate,c.className,MAX(j.score) as
+        max,MIN(j.score) as min,q.questionName,t.classId ,stu.studentId,
+        sum(j.score)
+        from customtest t
+        inner join custromjl j on
+        t.customId=j.customId
+        INNER JOIN questionpaper as q on
+        q.questionId=t.questionId
+        inner join student stu on
+        j.studentId=stu.studentId
+        INNER JOIN class as c on t.classId=c.classId
+        where t.examType=3
+        <trim prefix="and" suffixOverrides="and">
+            <if test="classId!=null and classId>0">
+                c.classId=#{classId} and
+            </if>
+            <if test="teacherId!=null and teacherId>0">
+                c.teacherId=#{teacherId} and
+            </if>
+            <if test="beginTime!=null and beginTime!=null and endTime!=null and endTime!=''">
+                t.startDate between #{beginTime} and #{endTime}
+            </if>
+        </trim>
+        group by j.customId
+        order by DATE_FORMAT( t.startDate , '%m' ) asc
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <!--学生的折线统计图-->
+    <select id="selectStudentCustromjldto" parameterType="custromjlDTO" resultType="custromjl">
+
+        SELECT
+        l.studentId,
+        avg(l.score) as avg,
+        stl.studentName,DATE_FORMAT( ct.startDate , '%m' ) as
+        month
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+        INNER JOIN class AS clas ON clas.classId = ct.classId
+        INNER JOIN custromjl AS l ON l.customId = ct.customId
+        INNER JOIN student AS stl ON stl.studentId = l.studentId
+        where ct.examType=3
+        <if test="classId!=null and classId>0">
+            and ct.classId=#{classId}
+        </if>
+        GROUP BY
+        l.studentId,l.customId
+        ORDER BY avg(l.score) DESC
+    </select>
+
+    <!--这个是查询xue及格数-->
+    <select id="selectStudentCustromjlPage" parameterType="custromjlDTO"
+            resultType="custromjl">
+        SELECT
+        l.studentId,
+        ct.classId,
+        avg(l.score) AS avg,
+        st.studentName,
+        count(q.questionId) AS count,
+        (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN class as cls on cls.classId=ctt.classId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType = 3
+        <if test="classId!=null and classId>0">
+            AND ctt.classId = #{classId}
+        </if>
+        and cls.teacherId=#{teacherId}
+        ) AS jgsl,
+        (
+        (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN class as cls on cls.classId=ctt.classId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType =3
+        <if test="classId!=null and classId>0">
+            AND ctt.classId = #{classId}
+        </if>
+        and cls.teacherId=#{teacherId}
+        )
+        ) / count(q.questionId) * 100 AS pjf
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+        INNER JOIN class as cls on cls.classId=ct.classId
+        INNER JOIN custromjl AS l ON l.customId = ct.customId
+        INNER JOIN student AS st ON st.studentId = l.studentId
+        WHERE
+        ct.examType = 3
+        <if test="classId!=null and classId>0">
+            AND ct.classId = #{classId}
+        </if>
+
+        and cls.teacherId=#{teacherId}
+        GROUP BY
+        l.studentId
+
+
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <!--x学生考试总行数-->
+    <select id="selectStudentCustromjldtoCount" parameterType="custromjlDTO"
+            resultType="int">
+        SELECT
+        count(*) AS recordCount
+        FROM
+        (
+        SELECT
+        l.studentId,
+        ct.classId,
+        avg(l.score) AS avg,
+        st.studentName,
+        count(q.questionId) AS count,
+        (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN class as cls on cls.classId=ctt.classId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType = 3
+        <if test="classId!=null and classId>0">
+            AND ctt.classId = #{classId}
+        </if>
+        and cls.teacherId=#{teacherId}
+        ) AS jgsl,
+        (
+        (
+        SELECT
+        count(jl.customid)
+        FROM
+        custromjl jl
+        INNER JOIN customtest AS ctt ON jl.customId = ctt.customId
+        INNER JOIN class as cls on cls.classId=ctt.classId
+        INNER JOIN questionpaper AS qq ON qq.questionId = ctt.questionId
+        WHERE
+        jl.studentid = l.studentId
+        AND jl.score >= (qq.sumScore * 0.6)
+        AND ctt.examType = 3
+        <if test="classId!=null and classId>0">
+            AND ctt.classId = #{classId}
+        </if>
+        and cls.teacherId=#{teacherId}
+        )
+        ) / count(q.questionId) * 100 AS pjf
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+        INNER JOIN class as cls on cls.classId=ct.classId
+        INNER JOIN custromjl AS l ON l.customId = ct.customId
+        INNER JOIN student AS st ON st.studentId = l.studentId
+        WHERE
+        ct.examType = 3
+        <if test="classId!=null and classId>0">
+            AND ct.classId = #{classId}
+        </if>
+
+        and cls.teacherId=#{teacherId}
+        GROUP BY
+        l.studentId
+        ) temp
+    </select>
+    <select id="selectClassExcel" resultType="custromjl" parameterType="custromjlDTO">
+        SELECT
+        DATE_FORMAT( c.startDate , '%m' ) as month,
+        st.studentName,
+        c.classId,
+        c.startDate,
+        q.questionName,
+        l.score,l.customId
+        FROM
+        customtest AS c
+        INNER JOIN custromjl AS l ON l.customId = c.customId
+        INNER JOIN questionpaper as q on q.questionId=c.questionId
+        INNER JOIN student AS st ON st.studentId = l.studentId
+        where c.examType=3
+        <if test="studentId!=null and studentId>0">
+
+            and st.studentId=#{studentId}
+            ORDER BY DATE_FORMAT( c.startDate , '%m' ) DESC
+        </if>
+        <if test="customId!=null and customId>0">
+
+            and l.customId=#{customId}
+            ORDER BY l.score DESC
+        </if>
+
+    </select>
+    <select id="selectQuestById" resultType="custromjl">
+        SELECT
+	q.questionName,
+	c.customId
+ FROM
+	questionpaper AS q
+ INNER JOIN customtest AS c ON c.questionId = q.questionId
+  WHERE
+	c.examType = 1 and c.classId=#{classId}
+    </select>
+    <insert id="insertCustromjl" parameterType="custromjl">
+        INSERT INTO custromjl (customId, studentId, score) VALUES(#{customId},#{studentId},#{score})
+    </insert>
+    <select id="selectDayList" resultType="custromjl" parameterType="custromjlDTO">
+        SELECT
+        jl.score,
+        q.sumScore,
+        st.studentId,
+        st.studentName,
+        DATE_FORMAT(ct.startDate, '%m/%d') AS stringDate
+        FROM
+        questionpaper AS q
+        INNER JOIN customtest AS ct ON ct.questionId = q.questionId
+        INNER JOIN custromjl AS jl ON jl.customId = ct.customId
+
+        INNER JOIN student AS st ON st.studentId = jl.studentId
+        INNER JOIN class as cl on cl.classId=st.classId
+        INNER JOIN teacher as t on t.teacherId=cl.teacherId
+
+        WHERE
+        ct.examType = 1
+        <if test="classId!=null and classId>0">
+            AND ct.classId = #{classId}
+        </if>
+
+        <if test="teacherId!=null and teacherId>0">
+            and t.teacherId=#{teacherId}
+        </if>
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            and ct.startDate BETWEEN #{beginTime} and #{endTime}
+        </if>
+    </select>
+</mapper>

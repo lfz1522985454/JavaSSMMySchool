@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.ApprovalMapper">
+    <cache></cache>
+    <resultMap type="Approval" id="approvalList">
+        <id column="approvalID" property="approvalID"/>
+        <result column="approvalType" property="approvalType"/><!--请假类型-->
+        <result column="beginDate" property="beginDate"/><!--开始时间-->
+        <result column="endDate" property="endDate"/><!--结束时间-->
+        <result column="diffDate" property="diffDate"/><!--差异时间-->
+        <result column="reason" property="reason"/><!--请假事由-->
+        <result column="image" property="image"/><!--图片（病假条）-->
+        <result column="approvalJY" property="approvalJY"/><!--审批的教员-->
+        <result column="approvalBZR" property="approvalBZR"/><!--审批的班主任-->
+        <result column="jyAgree" property="jyAgree"/><!--教员是否同意-->
+        <result column="bzrAgree" property="bzrAgree"/><!--班主任是否同意-->
+        <result column="jyAgreeDate" property="jyAgreeDate"/><!--教员审批时间-->
+        <result column="bzrAgreeDate" property="bzrAgreeDate"/><!--班主任审批时间-->
+        <result column="studentId" property="studentId"/><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertApproval" parameterType="Approval">
+        insert into approval
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="approvalType !=null and approvalType>0">
+                approvalType,
+            </if>
+            <if test="beginDate!=null and beginDate!=''">
+                beginDate,
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                endDate,
+            </if>
+            <if test="diffDate !=null and diffDate>0">
+                diffDate,
+            </if>
+            <if test="reason!=null and reason!=''">
+                reason,
+            </if>
+            <if test="image!=null and image!=''">
+                image,
+            </if>
+            <if test="approvalJY !=null and approvalJY>0">
+                approvalJY,
+            </if>
+            <if test="approvalBZR !=null and approvalBZR>0">
+                approvalBZR,
+            </if>
+            <if test="studentId !=null and studentId>0">
+                studentId,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="approvalType !=null and approvalType>0">
+                #{approvalType},
+            </if>
+            <if test="beginDate!=null and beginDate!=''">
+                #{beginDate},
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                #{endDate},
+            </if>
+            <if test="diffDate !=null and diffDate>0">
+                #{diffDate},
+            </if>
+            <if test="reason!=null and reason!=''">
+                #{reason},
+            </if>
+            <if test="image!=null and image!=''">
+                #{image},
+            </if>
+            <if test="approvalJY !=null and approvalJY>0">
+                #{approvalJY},
+            </if>
+            <if test="approvalBZR !=null and approvalBZR>0">
+                #{approvalBZR},
+            </if>
+            <if test="studentId !=null and studentId>0">
+                #{studentId},
+            </if>
+        </trim>
+    </insert>
+    <!--根据主键查询一个数据-->
+    <select id="selectApprovalByID" parameterType="int" resultMap="approvalList">
+        select approvalID ,approvalType ,beginDate ,endDate ,diffDate ,reason ,image ,approvalJY ,approvalBZR ,jyAgree ,bzrAgree ,jyAgreeDate ,bzrAgreeDate ,studentId
+        from approval where approvalID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateApproval" parameterType="Approval">
+        update approval
+        <trim prefix="set" suffix="where approvalID=#{approvalID}" suffixOverrides=",">
+            <if test="approvalType !=null and approvalType>0">
+                approvalType=#{approvalType},
+            </if>
+            <if test="beginDate!=null and beginDate!=''">
+                beginDate=#{beginDate},
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                endDate=#{endDate},
+            </if>
+            <if test="diffDate !=null and diffDate>0">
+                diffDate=#{diffDate},
+            </if>
+            <if test="reason!=null and reason!=''">
+                reason=#{reason},
+            </if>
+            <if test="image!=null and image!=''">
+                image=#{image},
+            </if>
+            <if test="approvalJY !=null and approvalJY>0">
+                approvalJY=#{approvalJY},
+            </if>
+            <if test="approvalBZR !=null and approvalBZR>0">
+                approvalBZR=#{approvalBZR},
+            </if>
+            <if test="jyAgree !=null and jyAgree>0">
+                jyAgree=#{jyAgree},
+            </if>
+            <if test="bzrAgree !=null and bzrAgree>0">
+                bzrAgree=#{bzrAgree},
+            </if>
+            <if test="jyAgreeDate!=null and jyAgreeDate!=''">
+                jyAgreeDate=#{jyAgreeDate},
+            </if>
+            <if test="bzrAgreeDate!=null and bzrAgreeDate!=''">
+                bzrAgreeDate=#{bzrAgreeDate},
+            </if>
+            <if test="studentId !=null and studentId>0">
+                studentId=#{studentId},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateApprovalEnabledByID">
+        update  set isEnabled =#{value} where approvalID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteApproval" parameterType="int">
+        delete from approval where approvalID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectApprovalAll" resultMap="approvalList">
+        select approvalID ,approvalType ,beginDate ,endDate ,diffDate ,reason ,image ,approvalJY ,approvalBZR ,jyAgree ,bzrAgree ,jyAgreeDate ,bzrAgreeDate ,studentId
+        from approval
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectApprovalByWhere" parameterType="ApprovalDTO" resultMap="approvalList">
+        select approvalID ,approvalType ,beginDate ,endDate ,diffDate ,reason ,image ,approvalJY ,approvalBZR ,jyAgree
+        ,bzrAgree ,jyAgreeDate ,bzrAgreeDate ,studentId
+        from approval
+        <trim prefix="where" prefixOverrides="and">
+            <if test="approvalType !=null and approvalType>0">
+                and approvalType=#{approvalType}
+            </if>
+            <if test="beginDate!=null and beginDate!=''">
+                and beginDate like CONCAT('%',#{beginDate},'%')
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                and endDate like CONCAT('%',#{endDate},'%')
+            </if>
+            <if test="diffDate !=null and diffDate>0">
+                and diffDate=#{diffDate}
+            </if>
+            <if test="reason!=null and reason!=''">
+                and reason like CONCAT('%',#{reason},'%')
+            </if>
+            <if test="image!=null and image!=''">
+                and image like CONCAT('%',#{image},'%')
+            </if>
+            <if test="approvalJY !=null and approvalJY>0">
+                and approvalJY=#{approvalJY}
+            </if>
+            <if test="approvalBZR !=null and approvalBZR>0">
+                and approvalBZR=#{approvalBZR}
+            </if>
+            <if test="jyAgree !=null and jyAgree>0">
+                and jyAgree=#{jyAgree}
+            </if>
+            <if test="bzrAgree !=null and bzrAgree>0">
+                and bzrAgree=#{bzrAgree}
+            </if>
+            <if test="jyAgreeDate!=null and jyAgreeDate!=''">
+                and jyAgreeDate like CONCAT('%',#{jyAgreeDate},'%')
+            </if>
+            <if test="bzrAgreeDate!=null and bzrAgreeDate!=''">
+                and bzrAgreeDate like CONCAT('%',#{bzrAgreeDate},'%')
+            </if>
+            <if test="studentId !=null and studentId>0">
+                and studentId=#{studentId}
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectApprovalCountByWhere" parameterType="ApprovalDTO" resultType="int">
+       select COUNT(approval.approvalID)
+        from approval
+        INNER JOIN student on approval.studentId = student.studentId
+        INNER JOIN class on class.classId = student.classId
+        INNER JOIN dictionarydetail on dictionarydetail.detailID = approval.approvalType
+        <trim prefix="where" prefixOverrides="and">
+            <if test="classId !=null and classId>0">
+                and class.classId =#{classId}
+            </if>
+        </trim>
+    </select>
+    <resultMap id="approvalDetailList" type="ApprovalResultDTO">
+        <result column="studentId" property="studentId"></result>
+        <result column="studentName" property="studentName"></result>
+        <result column="classId" property="classId"></result>
+        <result column="className" property="className"></result>
+        <result column="approvalID" property="approvalID"></result>
+        <result column="approvalType" property="approvalType"></result>
+        <result column="attrName" property="attrName"></result>
+        <result column="beginDate" property="beginDate"></result>
+        <result column="endDate" property="endDate"></result>
+        <result column="diffDate" property="diffDate"></result>
+        <result column="reason" property="reason"></result>
+        <result column="image" property="image"></result>
+        <result column="jyAgree" property="jyAgree"></result>
+        <result column="jyAgreeDate" property="jyAgreeDate"></result>
+        <result column="bzrAgree" property="bzrAgree"></result>
+        <result column="bzrAgreeDate" property="bzrAgreeDate"></result>
+    </resultMap>
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectApprovalByPage" parameterType="ApprovalDTO" resultMap="approvalDetailList">
+        select student.studentId,student.studentName,class.classId,class.className,dictionarydetail.attrName,
+        approval.approvalID,approval.approvalType,approval.beginDate,approval.endDate,
+        approval.diffDate,approval.reason,approval.image,approval.jyAgree,approval.jyAgreeDate,approval.bzrAgree,approval.bzrAgreeDate
+        from approval
+        INNER JOIN student on approval.studentId = student.studentId
+        INNER JOIN class on class.classId = student.classId
+        INNER JOIN dictionarydetail on dictionarydetail.detailID = approval.approvalType
+        <trim prefix="where" prefixOverrides="and">
+            <if test="classId !=null and classId>0">
+                and class.classId =#{classId}
+            </if>
+        </trim>
+        order by approval.beginDate DESC
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <!--查询老师的职务-->
+    <select id="selectTeacherDutyByTeacherId" parameterType="Integer" resultType="Integer">
+        select teacher.dutyId from teacher where teacher.teacherId = #{teacherId}
+    </select>
+    <!--教员审批-->
+    <update id="updateApprovalByJY" parameterType="ApprovalDTO">
+        update approval set approval.jyAgree = #{jyAgree}, approval.jyAgreeDate = now() where approval.approvalID=#{approvalID}
+    </update>
+    <!--班主任审批-->
+    <update id="updateApprovalByBZR" parameterType="ApprovalDTO">
+        update approval set approval.bzrAgree = #{bzrAgree}, approval.bzrAgreeDate = now() where approval.approvalID=#{approvalID}
+    </update>
+</mapper>
+

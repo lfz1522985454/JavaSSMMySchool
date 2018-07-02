@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.WorkhistoryMapper">
+    <resultMap type="Workhistory" id="workhistoryList">
+        <id column="historyID" property="historyID"/>
+        <result column="studentID" property="studentID"/><!---->
+        <result column="workID" property="workID"/><!---->
+        <result column="createDate" property="createDate"/><!---->
+        <result column="isComplete" property="isComplete"/><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertWorkhistory" parameterType="Homework_WorkHistory">
+        insert into workhistory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentid !=null and studentid>0">
+                studentid,
+            </if>
+            <if test="workid !=null and workid>0">
+                workid,
+            </if>
+            createDate,
+            <if test="isComplete !=null and isComplete>-1">
+                isComplete,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="studentid !=null and studentid>0">
+                #{studentid},
+            </if>
+            <if test="workid !=null and workid>0">
+                #{workid},
+            </if>
+            now(),
+            <if test="isComplete !=null and isComplete>-1">
+                #{isComplete},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectWorkhistoryByID" parameterType="int" resultMap="workhistoryList">
+		select historyID ,studentID ,workID ,createDate ,isComplete
+		from workhistory where historyID=#{id}
+	</select>
+
+    <!--修改数据-->
+    <update id="updateWorkhistory" parameterType="Workhistory">
+        update workhistory
+        <trim prefix="set" suffix="where historyID=#{historyID}" suffixOverrides=",">
+            <if test="studentID !=null and studentID>0">
+                studentID=#{studentID},
+            </if>
+            <if test="workID !=null and workID>0">
+                workID=#{workID},
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                createDate=#{createDate},
+            </if>
+            <if test="isComplete !=null and isComplete>0">
+                isComplete=#{isComplete},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateWorkhistoryEnabledByID">
+		update  workhistory set isComplete =#{value} where historyID=#{id}
+	</update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteWorkhistory" parameterType="int">
+		delete from workhistory where	 historyID=#{id}
+	</delete>
+
+    <!--查询全部数据-->
+    <select id="selectWorkhistoryAll" resultMap="workhistoryList">
+		select historyID ,studentID ,workID ,createDate ,isComplete
+		from workhistory
+	</select>
+
+    <!--根据条件查询数据-->
+    <select id="selectWorkhistoryByWhere" parameterType="WorkhistoryDTO" resultType="Workhistory">
+        SELECT
+        w.historyID,w.workID,w.studentID,w.isComplete,w.createDate,s.classId,h.workname
+        FROM
+        workhistory w
+        left join student s on w.studentID=s.studentId
+        left join homework h on w.workID=h.workid
+        inner join class c on s.classid=c.classid
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentId !=null and studentId!=''">
+                and s.studentid=#{studentId}
+            </if>
+            <if test="beginDate !=null and beginDate !='' and endDate !=null and beginDate!='' ">
+                and w.createDate BETWEEN
+                #{beginDate} and CONCAT(#{endDate}," 23:59:59")
+            </if>
+        </trim>
+        GROUP BY
+        w.workID,
+        s.studentid
+        order by
+        w.createDate asc
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectWorkhistoryCountByWhere" parameterType="WorkhistoryDTO" resultType="int">
+
+        select count(w.historyID) from workhistory w
+        left join homework h on w.workID=h.workid
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentId !=null and studentId>0">
+                and studentId=#{studentId}
+            </if>
+            <if test="workId !=null and workId>0">
+                and workID=#{workId}
+            </if>
+            <if test="beginDate !=null and beginDate !='' and endDate !=null and beginDate!='' ">
+                and w.createDate BETWEEN
+                #{beginDate} and CONCAT(#{endDate}," 23:59:59")
+            </if>
+            <if test="isComplete !=null and isComplete>0">
+                and isComplete=#{isComplete}
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectWorkhistoryByPage" parameterType="WorkhistoryDTO" resultMap="workhistoryList">
+        select historyID ,studentID ,workID ,createDate ,isComplete
+        from workhistory
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentID !=null and studentID>0">
+                and studentID=#{studentID}
+            </if>
+            <if test="workID !=null and workID>0">
+                and workID=#{workID}
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                and createDate like CONCAT('%',#{createDate},'%')
+            </if>
+            <if test="isComplete !=null and isComplete>0">
+                and isComplete=#{isComplete}
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <select id="selectWorkhistoryByStudentId" resultType="Workhistory" parameterType="WorkhistoryDTO">
+		select h.workname,h.remark,w.createDate,w.isComplete from workhistory w
+left join homework h on w.workID=h.workid where w.studentId=#{studentId}
+        <if test="beginDate !=null and beginDate !='' and endDate !=null and beginDate!='' ">
+            and w.createDate BETWEEN
+            #{beginDate} and CONCAT(#{endDate}," 23:59:59")
+        </if>
+   group by w.workid order  by  w.createDate asc LIMIT #{fromTo},#{pageSize}
+	</select>
+
+
+    <select id="selectWorkhistoryByStudenrIdReturnOne" resultType="Workhistory">
+            SELECT
+                w.historyID,
+                h.workname,
+                h.workdetail,
+                w.createDate
+            FROM
+                workhistory w
+            LEFT JOIN homework h ON w.workid = h.workid
+            where w.studentId=#{studentId}
+            ORDER BY
+                w.createDate DESC
+            LIMIT 1,
+             1
+    </select>
+
+</mapper>
+

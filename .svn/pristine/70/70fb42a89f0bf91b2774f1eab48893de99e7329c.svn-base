@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.TestcoreMapper">
+	<cache />
+	<resultMap type="Testscore" id="TestscoreList">
+		<id column="scoreId" property="scoreId" />
+		<result column="customId" property="customId" />
+		<result column="studentId" property="studentId" />
+		<result column="studentAnswer" property="studentAnswer" />
+		<result column="topicId" property="topicId" />
+		<result column="skillId" property="skillId" />
+		<result column="opicTypeId" property="opicTypeId" />
+		<result column="topicName" property="topicName" />
+		<result column="topicImg" property="topicImg" />
+		<result column="optionA" property="optionA" />
+		<result column="optionB" property="optionB" />
+		<result column="optionC" property="optionC" />
+		<result column="optionD" property="optionD" />
+		<result column="optionE" property="optionE" />
+		<result column="optionF" property="optionF" />
+		<result column="modelAnswer" property="modelAnswer" />
+		<result column="topicAnalysis" property="topicAnalysis" />
+		<result column="topicErroCount" property="topicErroCount" />
+		<result column="createtionDate" property="createtionDate" />
+		<result column="createdBy" property="createdBy" />
+		<result column="isEnabled" property="isEnabled" />
+		<result column="isStamp" property="isStamp" />
+		<result column="stampBy" property="stampBy" />
+		<result column="isEnable" property="isEnable" />
+	</resultMap>
+
+	<select id="selectTestCoreByStudentIdAndCustomId" resultMap="TestscoreList">
+		select * from testscore as t
+		INNER JOIN topic as p
+		on
+		t.topicId=p.topicId where studentId =#{studentId} and
+		customId=#{customId}
+	</select>
+
+	<insert id="insertTestScore" parameterType="Testscore">
+		insert into
+		Testscore(customId,studentId,studentAnswer,topicId,isEnable)
+		values(#{customId},#{studentId},#{studentAnswer},#{topicId},0)
+	</insert>
+
+	<select id="selectTestscoreByStudentId" resultMap="TestscoreList">
+		select * from
+		testscore as t
+		INNER JOIN topic as p
+		on
+		t.topicId=p.topicId where
+		studentId =#{studentId}
+	</select>
+	<update id="updateTestScore">
+		update testScore set isEnable=1
+		where scoreId=#{scoreId}
+	</update>
+</mapper>

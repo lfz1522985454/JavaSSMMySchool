@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.WorkimagesMapper">
+	<cache></cache>
+	<resultMap type="Workimages" id="workimagesList">
+		<id column="imgid" property="imgid" />
+		<result column="imgName" property="imgName" /><!---->
+		<result column="thumbnail" property="thumbnail" /><!---->
+		<result column="createDate" property="createDate" /><!---->
+		<result column="imgType" property="imgType" /><!---->
+		<result column="studentid" property="studentid" /><!---->
+		<result column="workid" property="workid" /><!---->
+		<result column="classid" property="classid" /><!---->
+	</resultMap>
+	<!--向插入数据-->
+	<insert id="insertWorkimages" parameterType="Workimages">
+		insert into workimages
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="imgName!=null and imgName!=''">
+				imgName,
+			</if>
+			<if test="thumbnail!=null and thumbnail!=''">
+				thumbnail,
+			</if>
+			<if test="createDate!=null and createDate!=''">
+				createDate,
+			</if>
+			<if test="imgType !=null and imgType>0">
+				imgType,
+			</if>
+			<if test="studentid !=null and studentid>0">
+				studentid,
+			</if>
+			<if test="workid !=null and workid>0">
+				workid,
+			</if>
+			<if test="classid !=null and classid>0">
+				classid,
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="imgName!=null and imgName!=''">
+				#{imgName},
+			</if>
+			<if test="thumbnail!=null and thumbnail!=''">
+				#{thumbnail},
+			</if>
+			<if test="createDate!=null and createDate!=''">
+				#{createDate},
+			</if>
+			<if test="imgType !=null and imgType>0">
+				#{imgType},
+			</if>
+			<if test="studentid !=null and studentid>0">
+				#{studentid},
+			</if>
+			<if test="workid !=null and workid>0">
+				#{workid},
+			</if>
+			<if test="classid !=null and classid>0">
+				#{classid},
+			</if>
+		</trim>
+	</insert>
+
+	<!--根据主键查询一个数据-->
+	<select id="selectWorkimagesByID" parameterType="int"  resultMap="workimagesList">
+		select imgid ,imgName ,thumbnail ,createDate ,imgType ,studentid ,workid ,classid
+		from workimages where imgid=#{id}
+	</select>
+
+	<!--修改数据-->
+	<update id="updateWorkimages" parameterType="Workimages">
+		update workimages
+		<trim prefix="set" suffix="where imgid=#{imgid}" suffixOverrides=",">
+		<if test="imgName!=null and imgName!=''">
+			imgName=#{imgName},
+		</if>
+		<if test="thumbnail!=null and thumbnail!=''">
+			thumbnail=#{thumbnail},
+		</if>
+		<if test="createDate!=null and createDate!=''">
+			createDate=#{createDate},
+		</if>
+		<if test="imgType !=null and imgType>0">
+			imgType=#{imgType},
+		</if>
+		<if test="studentid !=null and studentid>0">
+			studentid=#{studentid},
+		</if>
+		<if test="workid !=null and workid>0">
+			workid=#{workid},
+		</if>
+		<if test="classid !=null and classid>0">
+			classid=#{classid},
+		</if>
+		</trim>
+	</update>
+
+	<!--修改的启用状态-->
+	<update id="updateWorkimagesEnabledByID">
+		update  set isEnabled =#{value} where imgid=#{id}
+	</update>
+
+	<!--删除指定主键的数据-->
+	<delete id="deleteWorkimages" parameterType="int">
+		delete from workimages where imgid=#{id}
+	</delete>
+
+	<!--查询全部数据-->
+	<select id="selectWorkimagesAll"  resultMap="workimagesList">
+		select imgid ,imgName ,thumbnail ,createDate ,imgType ,studentid ,workid ,classid
+		from workimages
+	</select>
+
+	<!--根据条件查询数据-->
+	<select id="selectWorkimagesByWhere"  parameterType="WorkimagesDTO"  resultMap="workimagesList">
+		select imgid ,imgName ,thumbnail ,createDate ,imgType ,studentid ,workid ,classid
+		from workimages
+		<trim prefix="where" prefixOverrides="and">
+			<if test="imgName!=null and imgName!=''">
+				and imgName like CONCAT('%',#{imgName},'%')
+			</if>
+			<if test="thumbnail!=null and thumbnail!=''">
+				and thumbnail like CONCAT('%',#{thumbnail},'%')
+			</if>
+			<if test="createDate!=null and createDate!=''">
+				and createDate like CONCAT('%',#{createDate},'%')
+			</if>
+			<if test="imgType !=null and imgType>0">
+				and imgType=#{imgType}
+			</if>
+			<if test="studentid !=null and studentid>0">
+				and studentid=#{studentid}
+			</if>
+			<if test="workid !=null and workid>0">
+				and workid=#{workid}
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+		</trim>
+	</select>
+
+	<!--根据条件查询满足条件的记录数-->
+	<select id="selectWorkimagesCountByWhere"  parameterType="WorkimagesDTO" resultType="int">
+		select count(imgid)
+		from workimages
+		<trim prefix="where" prefixOverrides="and">
+			<if test="imgName!=null and imgName!=''">
+				and imgName like CONCAT('%',#{imgName},'%')
+			</if>
+			<if test="thumbnail!=null and thumbnail!=''">
+				and thumbnail like CONCAT('%',#{thumbnail},'%')
+			</if>
+			<if test="createDate!=null and createDate!=''">
+				and createDate like CONCAT('%',#{createDate},'%')
+			</if>
+			<if test="imgType !=null and imgType>0">
+				and imgType=#{imgType}
+			</if>
+			<if test="studentid !=null and studentid>0">
+				and studentid=#{studentid}
+			</if>
+			<if test="workid !=null and workid>0">
+				and workid=#{workid}
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+		</trim>
+	</select>
+
+	<!--得到数据表满足查询条件的分页记录-->
+	<select id="selectWorkimagesByPage"  parameterType="WorkimagesDTO" resultMap="workimagesList">
+		select imgid ,imgName ,thumbnail ,createDate ,imgType ,studentid ,workid ,classid
+		from workimages
+		<trim prefix="where" prefixOverrides="and">
+			<if test="imgName!=null and imgName!=''">
+				and imgName like CONCAT('%',#{imgName},'%')
+			</if>
+			<if test="thumbnail!=null and thumbnail!=''">
+				and thumbnail like CONCAT('%',#{thumbnail},'%')
+			</if>
+			<if test="createDate!=null and createDate!=''">
+				and createDate like CONCAT('%',#{createDate},'%')
+			</if>
+			<if test="imgType !=null and imgType>0">
+				and imgType=#{imgType}
+			</if>
+			<if test="studentid !=null and studentid>0">
+				and studentid=#{studentid}
+			</if>
+			<if test="workid !=null and workid>0">
+				and workid=#{workid}
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+		</trim>
+		LIMIT #{fromTo},#{pageSize}
+	</select>
+
+	<!--得到数据表满足查询条件的记录-->
+	<select id="selectWorkImageByStudentIdAndWorkId" resultType="CheckHomeWorkDTO" resultMap="workimagesList">
+		select imgid ,imgName  ,createDate ,imgType ,studentid ,workid ,classid	 from workimages
+		<trim prefix="where" prefixOverrides="and">
+			<if test="studentId !=null and studentId>0">
+				and studentid=#{studentId}
+			</if>
+			<if test="workId !=null and workId>0">
+				and workid=#{workId}
+			</if>
+			<if test="classId !=null and classId>0">
+				and classId=#{classId}
+			</if>
+		</trim>
+        order by createDate asc
+	</select>
+
+</mapper>
+

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.SelfTestMapper">
+	<cache></cache>
+	<resultMap type="SelfTest" id="selfTestInfo">
+		<id property="testId" column="testId" />
+		<result property="topicId" column="topicId" />
+		<result property="skillId" column="skillId" />
+		<result property="classId" column="classId" />
+		<result property="studentId" column="studentId" />
+		<result property="countCorrect" column="countCorrect" />
+		<result property="timeCount" column="timeCount" />
+		<result property="testDate" column="testDate" />
+		<result property="endDate" column="endDate" />
+		<result property="studentName" column="studentName" />
+		<result property="className" column="className" />
+		<result property="avgStudentTime" column="avgStudentTime" />
+	</resultMap>
+	<!-- 查询的总行数 -->
+	<select id="selectSelfTestCount" parameterType="SelfTestDTO"
+		resultType="int">
+		select count(distinct sel.studentId) as countResult from selftest as sel
+		INNER JOIN student as stu on sel.studentId=stu.studentId INNER JOIN class
+		as cla
+		on cla.classId=sel.classId 
+		<trim prefix="where" prefixOverrides="and">
+			<if test="studentName!=null">
+				and stu.studentName like ConCat('%',#{studentName},'%')
+			</if>
+			<if test="classId>0">
+				and sel.classId=#{classId}
+			</if>
+			<if test="testDate!=null and endDate!=null">
+				and sel.testDate between #{testDate} and #{endDate}
+			</if>
+		</trim>
+	</select>
+	<!-- 分页查询出所有需要显示的数据，除了正确率，正确率需要在Controller里按照studentId再查一次来计算 -->
+	<select id="selectSelfTestByPage" parameterType="SelfTestDTO"
+		resultMap="selfTestInfo">
+		select count(sel.isCorrect)as countCorrect, sel.testId,sel.topicId,sel.skillId,sel.studentId,sel.isCorrect,
+		CAST(sum(sel.timeCount/3600) as DECIMAL(18,2))as TimeCount,CAST(AVG(sel.timeCount)/60 as DECIMAL(18,2)) as avgStudentTime,
+		sel.testDate,sel.endDate,cla.className,stu.studentName from selftest as sel 
+		INNER JOIN student as stu on sel.studentId=stu.studentId INNER JOIN  class as cla  
+		on cla.classId=sel.classId where sel.isCorrect=1
+		GROUP BY sel.studentId
+		<trim prefix="having" prefixOverrides="and">
+			<if test="studentName!=null">
+				and sel.studentName=#{studentName}
+			</if>
+			<if test="classId>0">
+				and sel.classId=#{classId}
+			</if>
+			<if test="testDate!=null and endDate!=null">
+				and sel.testDate between #{testDate} and #{endDate}
+			</if>
+		</trim>
+		LIMIT #{fromTo},#{pageSize}
+	</select>
+	<select id="selectSelfTestIsCorrect" parameterType="int" resultType="int">
+		select count(studentId) as countStudent,studentId from selftest where studentId=#{studentId}
+	</select>
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.OverallMapper">
+
+
+    <resultMap id="overallInfo" type="OverallDTO">
+        <result property="studentId" column="studentId"></result>
+        <result property="studentName" column="studentName"></result>
+    </resultMap>
+    <select id="getOveralCount" parameterType="overalPageDTO" resultType="integer">
+		select COUNT(studentId) FROM Student
+		where classId=#{classId}
+	</select>
+    <select id="stuIdByPage" resultMap="overallInfo">
+			select studentid,studentName from student
+			where classid=#{classId}
+			limit #{fromTo},#{pageSize}
+	</select>
+    <select id="getOveralWork" resultType="double">
+		SELECT
+		(
+		SELECT
+		count(whi.historyID)
+		FROM
+		workhistory AS whi
+		WHERE whi.isComplete=1 and whi.studentID=stu.studentId
+		)/	count(wh.historyID)*100 AS workbfb
+		FROM
+		workhistory AS wh
+		INNER JOIN student AS stu ON stu.studentId = wh.studentID
+		INNER JOIN class cls ON cls.classId=stu.classId
+		where stu.studentId=#{studentId}
+		group by stu.studentId
+	</select>
+    <select id="getOveralScore" resultType="double">
+		SELECT
+		(
+		SELECT
+		count(jl.customid)
+		FROM
+		custromjl jl
+		inner join customtest AS ctt ON jl.customId = ctt.customId
+		inner join questionpaper AS qq on qq.questionId = ctt.questionId
+		WHERE
+		jl.studentid = l.studentId and jl.score>=(qq.sumScore*0.6)
+		)/count(q.questionId)*100  as scorebfb
+		FROM
+		questionpaper AS q
+		INNER JOIN customtest AS ct ON q.questionId = ct.questionId
+		INNER JOIN custromjl AS l ON l.customId = ct.customId
+		where l.studentId=#{studentId}
+		GROUP BY
+		l.studentId
+	</select>
+    <select id="getOveralCheck" resultType="double">
+		SELECT
+		count(att.attendanceID)/
+		(select count(a.attendanceID) from attendancel as a where a.studentid =stu.studentId)*100 as cqbfb
+		FROM
+		attendancel AS att
+		INNER JOIN dictionarydetail AS dd ON att.state = dd.detailID and dd.attrName in ('正常','迟到','早退')
+		INNER JOIN student AS stu ON stu.studentId = att.studentID
+		where stu.studentId=#{studentId}
+		GROUP BY
+		stu.studentId
+
+	</select>
+    <select id="getOveralStudy" parameterType="integer" resultType="double">
+SELECT
+(select count(p.progressId) from progress as p where p.studentId=#{studentId})/count(t.topicId)*100 as 'zxbfb'
+from topic AS t
+    </select>
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.ClassInfoMapper">
+    <cache></cache>
+    <!-- 结果映射 -->
+    <resultMap type="ClassInfo" id="classList">
+        <id property="classId" column="classId"/>
+        <result property="className" column="className"/>
+        <result property="teacherId" column="teacherId"/>
+        <result property="teacherName" column="teacherName"/>
+        <result property="headTeacherId" column="headTeacherId"/>
+        <result property="headTeacherName" column="headTeacherName"/>
+        <result property="detailID" column="detailID"></result>
+        <result property="isEnabled" column="isEnabled"/>
+        <result property="stuCount" column="stuCount"/>
+        <result property="remark" column="remark"/>
+        <result property="stage" column="stage"/>
+    </resultMap>
+    <select id="selectClassCount" parameterType="ClassDTO" resultType="int">
+        SELECT COUNT(1) FROM class
+        <trim prefix="where" prefixOverrides="and">
+            <if test="className!=null">
+                and className like ConCat('%',#{className},'%')
+            </if>
+            <if test="teacherId>0">
+                and teacherId=#{teacherId}
+            </if>
+            <if test="headTeacherId>0">
+                and headTeacherId=#{headTeacherId}
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectClassAll" parameterType="ClassDTO" resultMap="classList">
+        SELECT c.className,count(s.studentId)as stuCount,h.teacherName as
+        headTeacherName,c.classId,c.teacherId,t.teacherName,c.headTeacherId,c.isEnabled,c.remark FROM
+        student AS s INNER JOIN class AS c ON s.classId=c.classId INNER JOIN teacher AS h ON c.headTeacherId=h.teacherId
+        INNER JOIN teacher as t ON c.teacherId=t.teacherId
+        <trim prefix="where" prefixOverrides="and">
+            <if test="className!=null">
+                and c.className like ConCat('%',#{className},'%')
+            </if>
+            <if test="teacherId>0">
+                and c.teacherId=#{teacherId}
+            </if>
+            <if test="headTeacherId>0">
+                and c.headTeacherId=#{headTeacherId}
+            </if>
+        </trim>
+        GROUP BY c.classId
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+
+    <select id="selectHeadTeacherAll" resultMap="classList">
+		select d.detailID,t.teacherId,t.teacherName
+        FROM teacher as t
+        INNER JOIN dictionarydetail as d on d.detailID=t.dutyId
+        INNER JOIN dictionary as dn on dn.dictionaryID=d.dictionaryID
+	</select>
+
+    <select id="selectClassById" parameterType="int" resultMap="classList">
+		select*from class where classId=#{classId}
+	</select>
+
+    <!-- 修改班级 -->
+    <update id="updateClass" parameterType="ClassInfo">
+        update class
+        <trim prefix="set" suffix="where classId=#{classId}" suffixOverrides=",">
+            <if test="className!=null and className!=''">
+                className=#{className},
+            </if>
+            <if test="teacherId>0">
+                teacherId=#{teacherId},
+            </if>
+            <if test="headTeacherId>0">
+                headTeacherId=#{headTeacherId},
+            </if>
+            <if test="isEnabled>-1">
+                isEnabled=#{isEnabled},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+        </trim>
+    </update>
+    <!-- 停用班级 -->
+    <update id="deleteClass" parameterType="int">
+        update class
+        <trim prefix="set" suffix="where classId=#{classId}" suffixOverrides=",">
+            isEnabled=0,
+        </trim>
+    </update>
+    <insert id="addClass" parameterType="ClassInfo">
+        insert into class
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="className!=null">
+                className,
+            </if>
+            <if test="teacherId>0">
+                teacherId,
+            </if>
+            <if test="headTeacherId>0">
+                headTeacherId,
+            </if>
+            <if test="isEnabled>-1">
+                isEnabled,
+            </if>
+            <if test="remark!=null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="className!=null">
+                #{className},
+            </if>
+            <if test="teacherId>0">
+                #{teacherId},
+            </if>
+            <if test="headTeacherId>0">
+                #{headTeacherId},
+            </if>
+            <if test="isEnabled>-1">
+                #{isEnabled},
+            </if>
+            <if test="remark!=null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectClassList" resultMap="classList">
+		select classId,className from class
+	</select>
+    <select id="selectClassByTeacherId" resultMap="classList" parameterType="int">
+	select classId,className,stage from class where teacherId=#{teacherId}
+</select>
+
+    <select id="selectClassId" parameterType="String" resultMap="classList">
+
+        select classId from class
+        <where>
+            <if test="className!=null and className!=''">
+                className= #{className}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="selectClassInfo" resultMap="classList" parameterType="int">
+        SELECT c.classId,c.className,c.teacherId FROM class AS c INNER JOIN teacher AS t ON t.teacherId = c.teacherId where c.teacherId=#{teacherId}
+    </select>
+</mapper>

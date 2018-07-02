@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.EvaluationTopicMapper">
+    <resultMap id="evaluationTopicList" type="EvaluationTopic">
+        <id column="evaluationTopicID" property="evaluationTopicID"></id>
+        <result column="etID" property="etID"></result>
+        <result column="evaluationID" property="evaluationID"></result>
+        <result column="topicNumber" property="topicNumber"></result>
+        <result column="subjectOptions" property="subjectOptions"></result>
+        <result column="score" property="score"></result>
+    </resultMap>
+
+    <select id="selectEvaluationTopicByEvaluationID" parameterType="int" resultMap="evaluationTopicList">
+          SELECT et.EvaluationTopicID,et.etID,ed.evaluationID,et.topicNumber,et.subjectOptions,ed.score FROM evateacherdetail AS ed
+          INNER JOIN evaluationtopic AS et ON ed.etID = et.etID where ed.evaluationID=#{evaluationID} ORDER BY et.EvaluationTopicID,et.topicNumber
+    </select>
+</mapper>

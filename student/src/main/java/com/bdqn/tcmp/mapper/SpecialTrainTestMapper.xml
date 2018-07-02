@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.SpecialTrainTestMapper">
+
+	<resultMap type="SpecialTrainTest" id="SpecialTrainTestList">
+		<id column="id" property="id" />
+		<result column="specialtrainName" property="specialtrainName" />
+		<result column="studentId" property="studentId" />
+		<result column="studentName" property="studentName" />
+		<result column="count" property="count" />
+		<result column="score" property="score" />
+		<result column="createTime" property="createTime" />
+	</resultMap>
+
+	<select id="selectSpecialTrainTestByStudentId" resultMap="SpecialTrainTestList">
+		select
+		sp.id,sp.specialtrainName,s.studentId,s.studentName,sp.count,sp.score,sp.createTime
+		from specialtraintest as sp
+		INNER JOIN student as s on
+		sp.studentId=s.studentId where
+		s.studentId=#{studentId} order by sp.createTime desc
+	</select>
+
+	<select id="selectSpecialTraiinTestCount" resultMap="SpecialTrainTestList">
+		select
+		sum(count) as count,createTime from specialtraintest where
+		studentId=#{studentId}
+		and
+		YEARWEEK(DATE_FORMAT(subdate(createTime,date_format(curdate(),'%w')-2),'%Y-%m-%d'))=
+		YEARWEEK(now()) =1 GROUP BY DATE_FORMAT(createTime,'%Y-%m-%d') ORDER
+		BY createTime
+	</select>
+
+	<insert id="insertSpecialTrainTest" parameterType="SpecialTrainTest"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO specialtraintest
+		(specialtrainName,studentId,count, score,createTime)
+		VALUES
+		(#{specialtrainName}, #{studentId},#{count},
+		#{score}, now()
+		)
+	</insert>
+</mapper>

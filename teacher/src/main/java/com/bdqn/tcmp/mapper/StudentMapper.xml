@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.StudentMapper">
+    <cache></cache>
+    <!--<resultMap id="parentItemMapInfo" type="Parent">-->
+    <!--<id property="parentId" column="parentId"/>-->
+    <!--<result property="parentName" column="parentName"/>-->
+    <!--</resultMap>-->
+
+    <!--<resultMap type="Student" id="studentList">-->
+        <!--<id column="studentId" property="studentId"/>-->
+        <!--<result column="studentName" property="studentName"/>-->
+        <!--<result column="studentPassword" property="studentPassword"/>-->
+        <!--<result column="phone" property="phone"/>-->
+        <!--<result column="classId" property="classId"/>-->
+        <!--<result column="className" property="className"/>-->
+        <!--<result column="isEnabled" property="isEnabled"/>-->
+        <!--<result column="lastLoginTime" property="lastLoginTime"/>-->
+        <!--<result column="loginIp" property="loginIp"/>-->
+        <!--<result column="remark" property="remark"/>-->
+        <!--<result column="studentCode" property="studentCode"/>-->
+        <!--<result column="uuId" property="uuId"/>-->
+        <!--<result column="emergencyNumber" property="emergencyNumber"/>-->
+        <!--<result column="email" property="email"/>-->
+        <!--<result column="address" property="address"/>-->
+        <!--<result column="age" property="age"/>-->
+        <!--<result column="custromjCount" property="custromjCount"/>-->
+        <!--<result column="avgScore" property="avgScore"/>-->
+        <!--<result column="maxScore" property="maxScore"/>-->
+        <!--<result column="imgFilePath" property="imgFilePath"/>-->
+        <!--<result column="parentName" property="parentName"/>-->
+        <!--<result column="sw" property="sw"/>-->
+        <!--<result column="ng" property="ng"/>-->
+        <!--&lt;!&ndash;<collection property="parentList" resultMap="parentItemMapInfo" ofType="Parent"></collection>&ndash;&gt;-->
+    <!--</resultMap>-->
+    <!--老师点评的结果映射-->
+    <resultMap id="teacherReviewInfo" type="TeacherReviewDTO">
+        <result property="studentName" column="studentName"/>
+        <result property="studentPhone" column="stuPhone"/>
+        <result property="parentPhone" column="parPhone"/>
+        <result property="studentId" column="studentId"/>
+        <result property="studentEmail" column="stuEmail"/>
+        <result property="parentEmail" column="parEmail"/>
+    </resultMap>
+
+    <resultMap type="Student" id="studentList">
+        <id column="studentId" property="studentId"/>
+        <result column="studentName" property="studentName"/>
+        <result column="studentPassword" property="studentPassword"/>
+        <result column="phone" property="phone"/>
+        <result column="classId" property="classId"/>
+        <result column="className" property="className"/>
+        <result column="isEnabled" property="isEnabled"/>
+        <result column="lastLoginTime" property="lastLoginTime"/>
+        <result column="loginIp" property="loginIp"/>
+        <result column="remark" property="remark"/>
+        <result column="studentCode" property="studentCode"/>
+        <result column="uuId" property="uuId"/>
+        <result column="emergencyNumber" property="emergencyNumber"/>
+        <result column="email" property="email"/>
+        <result column="address" property="address"/>
+        <result column="age" property="age"/>
+        <result column="custromjCount" property="custromjCount"/>
+        <result column="avgScore" property="avgScore"/>
+        <result column="maxScore" property="maxScore"/>
+        <result column="imgFilePath" property="imgFilePath"/>
+        <result column="parentName" property="parentName"/>
+        <result column="sw" property="sw"/>
+        <result column="ng" property="ng"/>
+        <result column="attendanceID" property="attendanceID"/>
+        <result column="classID" property="classID"/>
+        <result column="studentID" property="studentID"/>
+        <result column="toSchool" property="toSchool"/>
+        <result column="leaveSchool" property="leaveSchool"/>
+        <result column="state" property="state"/>
+        <result column="classDate" property="classDate"/>
+        <result column="week" property="week"/>
+        <!--<collection property="parentList" resultMap="parentItemMapInfo" ofType="Parent"></collection>-->
+    </resultMap>
+
+    <resultMap id="resultMessInfo" type="ResultMessDTO">
+        <result column="studentId" property="studentId"/>
+        <result column="studentName" property="studentName"/>
+        <result column="currentScore" property="currentScore"/>
+        <result column="lastScore" property="lastScore"/>
+    </resultMap>
+
+
+
+    <select id="selectById" parameterType="int" resultType="Student">
+		select studentId,studentName,classId,studentPassword,phone,email,address,isEnabled,remark from student where studentId=#{studentId}
+	</select>
+
+    <insert id="insertStudent" parameterType="Student">
+        insert into Student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentName!=null">
+                studentName,
+            </if>
+            <if test="studentPassword!=null">
+                studentPassword,
+            </if>
+            <if test="phone!=null">
+                phone,
+            </if>
+            <if test="email!=null">
+                email,
+            </if>
+            <if test="address!=null">
+                address,
+            </if>
+            <if test="isEnabled>-1">
+                isEnabled,
+            </if>
+            <if test="remark!=null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="studentName!=null">
+                #{studentName},
+            </if>
+            <if test="studentPassword!=null">
+                #{studentPassword},
+            </if>
+            <if test="phone!=null">
+                #{phone},
+            </if>
+            <if test="email!=null">
+                #{email},
+            </if>
+            <if test="address!=null">
+                #{address},
+            </if>
+            <if test="isEnabled>-1">
+                #{isEnabled},
+            </if>
+            <if test="remark!=null">
+                #{remark},
+            </if>
+        </trim>
+
+    </insert>
+
+    <update id="updateStudentInfo" parameterType="Student">
+        update Student
+        <trim prefix="set" suffixOverrides=",">
+            <if test="studentName!=null">
+                studentName=#{studentName},
+            </if>
+            <if test="classId>0">
+                classId=#{classId},
+            </if>
+            <if test="studentPassword!=null">
+                studentPassword=#{studentPassword},
+            </if>
+            <if test="email!=null">
+                email=#{email},
+            </if>
+            <if test="emergencyNumber!=null">
+                emergencyNumber=#{emergencyNumber},
+            </if>
+            <if test="phone!=null">
+                phone=#{phone},
+            </if>
+
+            <if test="address!=null">
+                address=#{address},
+            </if>
+            <if test="isEnabled>-1">
+                isEnabled=#{isEnabled},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+        </trim>
+        <where>
+            studentId=#{studentId}
+        </where>
+    </update>
+
+    <update id="updateStudentByStudentId">
+		update student set custromjCount=#{custromjCount}
+		where studentId=#{studentId}
+	</update>
+
+    <select id="selectStudentAll" resultMap="studentList">
+		select * from student
+	</select>
+
+    <select id="selectCount" parameterType="StudentDTO" resultType="int">
+        select count(*) as recordCount from(
+        select s.studentId
+        from student as s INNER JOIN class as c ON s.classId=c.classId
+        INNER JOIN stuparent AS sp ON sp.studentID = s.studentId
+        INNER JOIN parent as p ON sp.parentID = p.parentId
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentName!=null and studentName!='' ">
+                and s.studentName like ConCat('%',#{studentName},'%')
+            </if>
+            <if test="parentName!=null and parentName!='' ">
+                and p.parentName like ConCat('%',#{parentName},'%')
+            </if>
+            <if test="phone!=null and phone!='' ">
+                and s.phone like ConCat('%',#{phone},'%')
+            </if>
+            <if test="classId>0">
+                and c.classId=#{classId}
+            </if>
+            <if test="idCard!=null and idCard!='' ">
+                and s.idCard like ConCat('%',#{idCard},'%')
+            </if>
+
+        </trim>
+        GROUP BY s.studentId
+        ) temp
+
+    </select>
+
+    <select id="selectStudent" useCache="false" parameterType="StudentDTO" resultMap="studentList">
+        -- select s.studentId,s.studentName,s.studentPassword,s.phone,c.className,
+        -- s.isEnabled,s.address,s.lastLoginTime,s.loginIp,s.remark
+        -- from student as s INNER JOIN class as c ON s.classId=c.classId
+        select s.studentId,s.studentName,s.studentPassword,s.phone,c.className,
+        s.isEnabled,s.address,s.lastLoginTime,s.loginIp,s.remark,GROUP_CONCAT(p.parentName SEPARATOR ',') as parentName
+        from student as s INNER JOIN class as c ON s.classId=c.classId
+        INNER JOIN stuparent AS sp ON sp.studentID = s.studentId
+        INNER JOIN parent as p ON sp.parentID = p.parentId
+        <trim prefix="where" prefixOverrides="and">
+            <if test="studentName!=null and studentName!='' ">
+                and s.studentName like ConCat('%',#{studentName},'%')
+            </if>
+            <if test="parentName!=null and parentName!='' ">
+                and p.parentName like ConCat('%',#{parentName},'%')
+            </if>
+            <if test="phone!=null and phone!='' ">
+                and s.phone like ConCat('%',#{phone},'%')
+            </if>
+            <if test="classId>0">
+                and c.classId=#{classId}
+            </if>
+            <if test="idCard!=null and idCard!='' ">
+                and s.idCard like ConCat('%',#{idCard},'%')
+            </if>
+
+        </trim>
+        Group By s.studentId
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+
+    <!--依据班级编号查询出班级中的所有学生记录-->
+    <select id="selectStudentByClassId" resultMap="studentList">
+		select * from student where classid=#{classId}
+	</select>
+
+    <select useCache="false" id="selectStudentByWorkLog" resultType="CheckHomeWork" parameterType="CheckHomeWorkDTO">
+        SELECT
+        h.historyID,
+        count(w.stuid) as logCount,
+        s.studentId,
+        h.isComplete,
+        s.studentname,
+        sum(w.diffDate) AS diffDate,
+        sum(w.wordCount) AS wordCount,
+        (
+        SELECT
+        count(studentId)
+        FROM
+        workimages
+        WHERE
+        classid = s.classId
+        AND workid = w.workid
+        AND studentid = s.studentId
+        ) AS imgcount,
+        (
+        SELECT
+        count(studentId)
+        FROM
+        workimages
+        WHERE
+        classid = s.classId
+        AND workid = w.workid
+        AND studentid = s.studentId
+        AND imgType = 2
+        ) AS copyCount
+        FROM
+        student AS s
+        LEFT JOIN worklog AS w ON s.studentId = w.stuid
+        LEFT JOIN workhistory AS h ON w.workid = h.workID
+        AND w.stuid = h.studentID
+        <trim prefix="where" prefixOverrides="and">
+            <if test="classId!=null and classId>0">
+                and s.classId=#{classId}
+            </if>
+            <if test="studentId!=null and studentId>0">
+                and s.studentId=#{studentId}
+            </if>
+            <if test="workId!=null and workId>0">
+                and w.workId=#{workId}
+            </if>
+        </trim>
+        GROUP BY
+        s.studentId,
+        s.studentName
+    </select>
+    <!--依据班级编号和所参加的测试编号，查询出班级考试的前10名-->
+    <select id="selectStudentByClassAndQuestionTOP10" resultMap="teacherReviewInfo">
+			select stu.studentId,stu.studentName,stu.email as stuEmail,stu.phone as stuPhone,par.phone as parPhone ,par.email as parEmail
+			from student as stu
+			left join stuparent sp on stu.studentId=sp.studentID
+			inner join parent as par on par.parentId=sp.parentID
+			left join custromjl cj on stu.studentId=cj.studentid
+			left join customtest ct on cj.customId=ct.customId
+			left join questionpaper qp on ct.questionId=qp.questionId
+			where cj.customId =(select customId from customtest where questionId =#{questionId} and classId=#{classId})
+			and stu.classId=#{classId}
+			order by score desc
+			LIMIT 10
+	</select>
+
+    <!--查询本次考试中成绩低于班级平均分的消息记录-->
+    <select id="underAverageStudentList" resultMap="teacherReviewInfo">
+select stu.studentId,stu.studentName,stu.email as stuEmail,stu.phone as stuPhone,par.phone as parPhone ,par.email as parEmail
+		from student as stu
+		left join stuparent sp on stu.studentId=sp.studentID
+		inner join parent as par on par.parentId=sp.parentID
+		left join custromjl cj on stu.studentId=cj.studentid
+		left join customtest ct on cj.customId=ct.customId
+		left join questionpaper qp on ct.questionId=qp.questionId
+		where cj.customId=(select customId from customtest where questionId =#{questionId} and classId=#{classId})
+		and stu.classId=#{classId}
+		and cj.score&lt;(select AVG(score) from Custromjl
+		where customId=(select customId
+		from customtest where questionId =#{questionId} and classId=#{classId}))
+	</select>
+
+
+    <select id="selectStudentByClassIdDay" parameterType="int" resultMap="studentList">
+        select s.studentName,s.studentId,DATE_FORMAT(a.toSchool, '%H:%i') toSchool ,DATE_FORMAT(a.leaveSchool,
+        '%H:%i') leaveSchool,DATE_FORMAT(a.classDate, '%m/%d') as classDate,DAYOFWEEK(a.classDate)-1 as week ,
+        a.state,c.className from student as s left JOIN class as c ON s.classId=c.classId LEFT JOIN
+        attendancel as a on s.studentID=a.studentID where
+        <trim suffix="and">
+            <if test="classId>0">
+                c.classId=#{classId}
+            </if>
+
+        </trim>
+        DATE_FORMAT(a.classDate, '%Y-%m-%d')=current_date
+
+
+    </select>
+
+    <select id="selectStudentByClassIdWeek" parameterType="int" resultMap="studentList">
+        select s.studentName,s.studentId,DATE_FORMAT(a.toSchool, '%H:%i') toSchool ,DATE_FORMAT(a.leaveSchool,
+        '%H:%i') leaveSchool,DATE_FORMAT(a.classDate, '%m/%d') as classDate,DAYOFWEEK(a.classDate)-1 as week ,
+        a.state,c.className from student as s left JOIN class as c ON s.classId=c.classId LEFT JOIN
+        attendancel as a on s.studentID=a.studentID where
+        <trim suffix="and">
+            <if test="classId>0">
+                c.classId=#{classId}
+            </if>
+
+        </trim>
+        YEARWEEK(date_format(a.classDate,'%Y-%m-%d')) = YEARWEEK(now());
+    </select>
+    <select id="selectStudentByClassIdMonth" parameterType="int" resultMap="studentList">
+        select s.studentName,s.studentId,DATE_FORMAT(a.toSchool, '%H:%i') toSchool ,DATE_FORMAT(a.leaveSchool,
+        '%H:%i') leaveSchool,DATE_FORMAT(a.classDate, '%m/%d') as classDate,DAYOFWEEK(a.classDate)-1 as week ,
+        a.state,c.className from student as s left JOIN class as c ON s.classId=c.classId LEFT JOIN
+        attendancel as a on s.studentID=a.studentID where
+        <trim suffix="and">
+            <if test="classId>0">
+                c.classId=#{classId}
+            </if>
+
+        </trim>
+        date_format(a.classDate, '%Y%m') = date_format(curdate() , '%Y%m');
+    </select>
+
+    <select id="selectStudentByClassIdYear" parameterType="int" resultMap="studentList">
+        select s.studentName,s.studentId,DATE_FORMAT(a.toSchool, '%H:%i') toSchool ,DATE_FORMAT(a.leaveSchool,
+        '%H:%i') leaveSchool,DATE_FORMAT(a.classDate, '%m/%d') as classDate,DAYOFWEEK(a.classDate)-1 as week ,
+        a.state,c.className from student as s left JOIN class as c ON s.classId=c.classId LEFT JOIN
+        attendancel as a on s.studentID=a.studentID
+        <where>
+            <trim>
+                <if test="classId>0">
+                    a.classId=#{classId}
+                </if>
+
+            </trim>
+
+        </where>
+
+    </select>
+    <!--查询出本次测试的学生学号，名称和成绩-->
+    <select id="getCurrentQuestionScore" resultMap="resultMessInfo">
+				SELECT stu.studentId,stu.studentName,
+					IFNULL(
+						(
+							SELECT jl.score
+							FROM custromjl AS jl
+							INNER JOIN customtest AS ct ON jl.customId = ct.customId
+							WHERE ct.classId = stu.classId
+							AND jl.studentId = stu.studentId
+							AND ct.questionId = #{questionId}
+						),0
+					) AS currentScore
+				FROM
+					student AS stu
+				WHERE
+					stu.classId = #{classId}
+				ORDER BY
+					currentScore DESC
+	</select>
+
+    <!--获取上一次的考试成绩和排名-->
+    <select id="getLastQuestionScore" resultMap="resultMessInfo">
+		SELECT stu.studentId,stu.studentName,
+		IFNULL((
+		SELECT jl.score
+		FROM custromjl AS jl
+		INNER JOIN customtest AS ct ON jl.customId = ct.customId
+		WHERE ct.classId = stu.classId
+		AND jl.studentId = stu.studentId
+		AND ct.questionId = (select max(ct.questionId) from customtest as ct where ct.classId=#{classId} and ct.questionId &lt;#{questionId} order by ct.questionId asc)
+		),0) AS lastScore
+		FROM student AS stu
+		WHERE stu.classId = #{classId}
+		ORDER BY lastScore DESC
+	</select>
+
+    <!--依据学生编号查询学生对象-->
+    <select id="getStudentObjByStudentId" parameterType="integer" resultMap="teacherReviewInfo">
+select stu.studentId,stu.studentName,stu.email as stuEmail,stu.phone as stuPhone,par.phone as parPhone ,par.email as parEmail
+		from student as stu
+		left join stuparent sp on stu.studentId=sp.studentID
+		inner join parent as par on par.parentId=sp.parentID
+		left join custromjl cj on stu.studentId=cj.studentid
+		left join customtest ct on cj.customId=ct.customId
+		left join questionpaper qp on ct.questionId=qp.questionId
+			where cj.customId=(select customId from customtest where questionId =3 and classId=2)
+			and stu.studentId=#{studentId}
+	</select>
+
+    <!--获取班级本次测试的平均分-->
+    <select id="getAverage" resultType="double">
+        select AVG(score) from Custromjl
+        where customId=(select customId
+        from customtest where questionId =#{questionId} and classId=#{classId})
+        and studentId in(select studentId from Student where classId=#{classId})
+    </select>
+</mapper>

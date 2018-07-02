@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.LessonMapper">
+    <cache></cache>
+    <resultMap type="Lesson" id="lessonList">
+        <id column="lessonID" property="lessonID"/>
+        <result column="lessonDate" property="lessonDate"/><!---->
+        <result column="subjectNameA" property="subjectNameA"/><!---->
+        <result column="roomIDA" property="roomIDA"/><!---->
+        <result column="classIDA" property="classIDA"/><!---->
+        <result column="teacherIDA" property="teacherIDA"/><!---->
+        <result column="subjectNameB" property="subjectNameB"/><!---->
+        <result column="roomIDB" property="roomIDB"/><!---->
+        <result column="classIDB" property="classIDB"/><!---->
+        <result column="teacherIDB" property="teacherIDB"/><!---->
+        <result column="subjectNameC" property="subjectNameC"/><!---->
+        <result column="roomIDC" property="roomIDC"/><!---->
+        <result column="classIDC" property="classIDC"/><!---->
+        <result column="teacherIDC" property="teacherIDC"/><!---->
+        <result column="subjectNameD" property="subjectNameD"/><!---->
+        <result column="roomIDD" property="roomIDD"/><!---->
+        <result column="classIDD" property="classIDD"/><!---->
+        <result column="teacherIDD" property="teacherIDD"/><!---->
+
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertLesson" parameterType="Lesson">
+        insert into lesson
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="lessonDate!=null and lessonDate!=''">
+                lessonDate,
+            </if>
+            <if test="subjectNameA!=null and subjectNameA!=''">
+                subjectNameA,
+            </if>
+            <if test="roomIDA!=null and roomIDA!=''">
+                roomIDA,
+            </if>
+            <if test="classIDA !=null and classIDA>0">
+                classIDA,
+            </if>
+            <if test="teacherIDA !=null and teacherIDA>0">
+                teacherIDA,
+            </if>
+            <if test="subjectNameB!=null and subjectNameB!=''">
+                subjectNameB,
+            </if>
+            <if test="roomIDB!=null and roomIDB!=''">
+                roomIDB,
+            </if>
+            <if test="classIDB !=null and classIDB>0">
+                classIDB,
+            </if>
+            <if test="teacherIDB !=null and teacherIDB>0">
+                teacherIDB,
+            </if>
+            <if test="subjectNameC!=null and subjectNameC!=''">
+                subjectNameC,
+            </if>
+            <if test="roomIDC!=null and roomIDC!=''">
+                roomIDC,
+            </if>
+            <if test="classIDC !=null and classIDC>0">
+                classIDC,
+            </if>
+            <if test="teacherIDC !=null and teacherIDC>0">
+                teacherIDC,
+            </if>
+            <if test="subjectNameD!=null and subjectNameD!=''">
+                subjectNameD,
+            </if>
+            <if test="roomIDD!=null and roomIDD!=''">
+                roomIDD,
+            </if>
+            <if test="classIDD !=null and classIDD>0">
+                classIDD,
+            </if>
+            <if test="teacherIDD !=null and teacherIDD>0">
+                teacherIDD,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="lessonDate!=null and lessonDate!=''">
+                #{lessonDate},
+            </if>
+            <if test="subjectNameA!=null and subjectNameA!=''">
+                #{subjectNameA},
+            </if>
+            <if test="roomIDA!=null and roomIDA!=''">
+                #{roomIDA},
+            </if>
+            <if test="classIDA !=null and classIDA>0">
+                #{classIDA},
+            </if>
+            <if test="teacherIDA !=null and teacherIDA>0">
+                #{teacherIDA},
+            </if>
+            <if test="subjectNameB!=null and subjectNameB!=''">
+                #{subjectNameB},
+            </if>
+            <if test="roomIDB!=null and roomIDB!=''">
+                #{roomIDB},
+            </if>
+            <if test="classIDB !=null and classIDB>0">
+                #{classIDB},
+            </if>
+            <if test="teacherIDB !=null and teacherIDB>0">
+                #{teacherIDB},
+            </if>
+            <if test="subjectNameC!=null and subjectNameC!=''">
+                #{subjectNameC},
+            </if>
+            <if test="roomIDC!=null and roomIDC!=''">
+                #{roomIDC},
+            </if>
+            <if test="classIDC !=null and classIDC>0">
+                #{classIDC},
+            </if>
+            <if test="teacherIDC !=null and teacherIDC>0">
+                #{teacherIDC},
+            </if>
+            <if test="subjectNameD!=null and subjectNameD!=''">
+                #{subjectNameD},
+            </if>
+            <if test="roomIDD!=null and roomIDD!=''">
+                #{roomIDD},
+            </if>
+            <if test="classIDD !=null and classIDD>0">
+                #{classIDD},
+            </if>
+            <if test="teacherIDD !=null and teacherIDD>0">
+                #{teacherIDD},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectLessonByID" parameterType="int" resultMap="lessonList">
+        select lessonID ,lessonDate ,subjectNameA ,roomIDA ,classIDA ,teacherIDA ,subjectNameB ,roomIDB ,classIDB
+        ,teacherIDB ,subjectNameC ,roomIDC ,classIDC ,teacherIDC ,subjectNameD ,roomIDD ,classIDD ,teacherIDD
+        from lesson where lessonID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateLesson" parameterType="Lesson">
+        update lesson
+        <trim prefix="set" suffix="where lessonID=#{lessonID}" suffixOverrides=",">
+            <if test="lessonDate!=null and lessonDate!=''">
+                lessonDate=#{lessonDate},
+            </if>
+            <if test="subjectNameA!=null and subjectNameA!=''">
+                subjectNameA=#{subjectNameA},
+            </if>
+            <if test="roomIDA!=null and roomIDA!=''">
+                roomIDA=#{roomIDA},
+            </if>
+            <if test="classIDA !=null and classIDA>0">
+                classIDA=#{classIDA},
+            </if>
+            <if test="teacherIDA !=null and teacherIDA>0">
+                teacherIDA=#{teacherIDA},
+            </if>
+            <if test="subjectNameB!=null and subjectNameB!=''">
+                subjectNameB=#{subjectNameB},
+            </if>
+            <if test="roomIDB!=null and roomIDB!=''">
+                roomIDB=#{roomIDB},
+            </if>
+            <if test="classIDB !=null and classIDB>0">
+                classIDB=#{classIDB},
+            </if>
+            <if test="teacherIDB !=null and teacherIDB>0">
+                teacherIDB=#{teacherIDB},
+            </if>
+            <if test="subjectNameC!=null and subjectNameC!=''">
+                subjectNameC=#{subjectNameC},
+            </if>
+            <if test="roomIDC!=null and roomIDC!=''">
+                roomIDC=#{roomIDC},
+            </if>
+            <if test="classIDC !=null and classIDC>0">
+                classIDC=#{classIDC},
+            </if>
+            <if test="teacherIDC !=null and teacherIDC>0">
+                teacherIDC=#{teacherIDC},
+            </if>
+            <if test="subjectNameD!=null and subjectNameD!=''">
+                subjectNameD=#{subjectNameD},
+            </if>
+            <if test="roomIDD!=null and roomIDD!=''">
+                roomIDD=#{roomIDD},
+            </if>
+            <if test="classIDD !=null and classIDD>0">
+                classIDD=#{classIDD},
+            </if>
+            <if test="teacherIDD !=null and teacherIDD>0">
+                teacherIDD=#{teacherIDD},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateLessonEnabledByID">
+        update set isEnabled =#{value} where lessonID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteLesson" parameterType="int">
+        delete from lesson where lessonID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <!-- <select id="selectLessonAll"  resultMap="lessonList">
+         select lessonID ,lessonDate ,subjectNameA ,roomIDA ,classIDA ,teacherIDA ,subjectNameB ,roomIDB ,classIDB ,teacherIDB ,subjectNameC ,roomIDC ,classIDC ,teacherIDC ,subjectNameD ,roomIDD ,classIDD ,teacherIDD
+         from lesson
+     </select>-->
+    <select id="selectLessonAll" resultMap="lessonList">
+             SELECT
+        l.lessonID,
+        l.lessonDate,
+        l.subjectNameA,
+        l.roomIDA,
+        ca.className as  classIDA,
+        ta.teacherName as teacherIDA,
+        l.roomIDB,
+        l.subjectNameB,
+        cb.className as classIDB,
+        tb.teacherName as teacherIDB,
+        l.roomIDC,
+        l.subjectNameC,
+        cc.className as classIDC,
+        tc.teacherName as teacherIDC,
+        l.roomIDD,
+        l.subjectNameD,
+        cd.className as classIDD,
+        td.teacherName as teacherIDD
+        FROM
+        lesson AS l left JOIN
+        teacher AS ta on l.teacherIDA=ta.teacherId LEFT JOIN
+        class AS ca on l.classIDA=ca.classId LEFT JOIN
+        teacher as tb on l.teacherIDB=tb.teacherId LEFT JOIN
+        class AS cb on l.classIDB=cb.classId LEFT JOIN
+        teacher as tc on l.teacherIDC=tc.teacherId LEFT JOIN
+        class AS cc on l.classIDC=cc.classId LEFT JOIN
+        teacher as td on l.teacherIDD=td.teacherId LEFT JOIN
+        class AS cd on l.classIDD=cd.classId
+        where YEARWEEK(date_format(l.lessonDate,'%Y-%m-%d')) = YEARWEEK(now())
+    </select>
+
+    <select id="selectLessonAllById" resultMap="lessonList" parameterType="int">
+       SELECT
+        l.lessonID,
+        l.lessonDate,
+        l.subjectNameA,
+        l.roomIDA,
+        ca.className as  classIDA,
+        ta.teacherName as teacherIDA,
+        l.roomIDB,
+        l.subjectNameB,
+        cb.className as classIDB,
+        tb.teacherName as teacherIDB,
+        l.roomIDC,
+        l.subjectNameC,
+        cc.className as classIDC,
+        tc.teacherName as teacherIDC,
+        l.roomIDD,
+        l.subjectNameD,
+        cd.className as classIDD,
+        td.teacherName as teacherIDD
+        FROM
+        lesson AS l left JOIN
+        teacher AS ta on l.teacherIDA=ta.teacherId LEFT JOIN
+        class AS ca on l.classIDA=ca.classId LEFT JOIN
+        teacher as tb on l.teacherIDB=tb.teacherId LEFT JOIN
+        class AS cb on l.classIDB=cb.classId LEFT JOIN
+        teacher as tc on l.teacherIDC=tc.teacherId LEFT JOIN
+        class AS cc on l.classIDC=cc.classId LEFT JOIN
+        teacher as td on l.teacherIDD=td.teacherId LEFT JOIN
+        class AS cd on l.classIDD=cd.classId
+        where YEARWEEK(date_format(l.lessonDate,'%Y-%m-%d')) = YEARWEEK(now()) and dayofweek(date_sub(l.lessonDate,interval 1 day))=#{id}
+    </select>
+    <select id="selectLessonAllByRi" resultMap="lessonList">
+         SELECT
+        l.lessonID,
+        l.lessonDate,
+        l.subjectNameA,
+        l.roomIDA,
+        ca.className as  classIDA,
+        ta.teacherName as teacherIDA,
+        l.roomIDB,
+        l.subjectNameB,
+        cb.className as classIDB,
+        tb.teacherName as teacherIDB,
+        l.roomIDC,
+        l.subjectNameC,
+        cc.className as classIDC,
+        tc.teacherName as teacherIDC,
+        l.roomIDD,
+        l.subjectNameD,
+        cd.className as classIDD,
+        td.teacherName as teacherIDD
+        FROM
+        lesson AS l left JOIN
+        teacher AS ta on l.teacherIDA=ta.teacherId LEFT JOIN
+        class AS ca on l.classIDA=ca.classId LEFT JOIN
+        teacher as tb on l.teacherIDB=tb.teacherId LEFT JOIN
+        class AS cb on l.classIDB=cb.classId LEFT JOIN
+        teacher as tc on l.teacherIDC=tc.teacherId LEFT JOIN
+        class AS cc on l.classIDC=cc.classId LEFT JOIN
+        teacher as td on l.teacherIDD=td.teacherId LEFT JOIN
+        class AS cd on l.classIDD=cd.classId
+        where  DATE_FORMAT(l.lessonDate,'%Y-%m-%d')=DATE_FORMAT(subdate(NOW(),date_format(curdate(),'%w')-7),'%Y-%m-%d')
+    </select>
+    <!--根据条件查询数据-->
+    <select id="selectLessonByWhere" parameterType="LessonDTO" resultMap="lessonList">
+        select lessonID ,lessonDate ,subjectNameA ,roomIDA ,classIDA ,teacherIDA ,subjectNameB ,roomIDB ,classIDB
+        ,teacherIDB ,subjectNameC ,roomIDC ,classIDC ,teacherIDC ,subjectNameD ,roomIDD ,classIDD ,teacherIDD
+        from lesson
+        <trim prefix="where" prefixOverrides="and">
+            <if test="lessonDate!=null and lessonDate!=''">
+                and lessonDate like CONCAT('%',#{lessonDate},'%')
+            </if>
+            <if test="subjectNameA!=null and subjectNameA!=''">
+                and subjectNameA like CONCAT('%',#{subjectNameA},'%')
+            </if>
+            <if test="roomIDA!=null and roomIDA!=''">
+                and roomIDA like CONCAT('%',#{roomIDA},'%')
+            </if>
+            <if test="classIDA !=null and classIDA>0">
+                and classIDA=#{classIDA}
+            </if>
+            <if test="teacherIDA !=null and teacherIDA>0">
+                and teacherIDA=#{teacherIDA}
+            </if>
+            <if test="subjectNameB!=null and subjectNameB!=''">
+                and subjectNameB like CONCAT('%',#{subjectNameB},'%')
+            </if>
+            <if test="roomIDB!=null and roomIDB!=''">
+                and roomIDB like CONCAT('%',#{roomIDB},'%')
+            </if>
+            <if test="classIDB !=null and classIDB>0">
+                and classIDB=#{classIDB}
+            </if>
+            <if test="teacherIDB !=null and teacherIDB>0">
+                and teacherIDB=#{teacherIDB}
+            </if>
+            <if test="subjectNameC!=null and subjectNameC!=''">
+                and subjectNameC like CONCAT('%',#{subjectNameC},'%')
+            </if>
+            <if test="roomIDC!=null and roomIDC!=''">
+                and roomIDC like CONCAT('%',#{roomIDC},'%')
+            </if>
+            <if test="classIDC !=null and classIDC>0">
+                and classIDC=#{classIDC}
+            </if>
+            <if test="teacherIDC !=null and teacherIDC>0">
+                and teacherIDC=#{teacherIDC}
+            </if>
+            <if test="subjectNameD!=null and subjectNameD!=''">
+                and subjectNameD like CONCAT('%',#{subjectNameD},'%')
+            </if>
+            <if test="roomIDD!=null and roomIDD!=''">
+                and roomIDD like CONCAT('%',#{roomIDD},'%')
+            </if>
+            <if test="classIDD !=null and classIDD>0">
+                and classIDD=#{classIDD}
+            </if>
+            <if test="teacherIDD !=null and teacherIDD>0">
+                and teacherIDD=#{teacherIDD}
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectLessonCountByWhere" parameterType="LessonDTO" resultType="int">
+        select count(lessonID)
+        from lesson
+        <trim prefix="where" prefixOverrides="and">
+            <if test="lessonDate!=null and lessonDate!=''">
+                and lessonDate like CONCAT('%',#{lessonDate},'%')
+            </if>
+            <if test="subjectNameA!=null and subjectNameA!=''">
+                and subjectNameA like CONCAT('%',#{subjectNameA},'%')
+            </if>
+            <if test="roomIDA!=null and roomIDA!=''">
+                and roomIDA like CONCAT('%',#{roomIDA},'%')
+            </if>
+            <if test="classIDA !=null and classIDA>0">
+                and classIDA=#{classIDA}
+            </if>
+            <if test="teacherIDA !=null and teacherIDA>0">
+                and teacherIDA=#{teacherIDA}
+            </if>
+            <if test="subjectNameB!=null and subjectNameB!=''">
+                and subjectNameB like CONCAT('%',#{subjectNameB},'%')
+            </if>
+            <if test="roomIDB!=null and roomIDB!=''">
+                and roomIDB like CONCAT('%',#{roomIDB},'%')
+            </if>
+            <if test="classIDB !=null and classIDB>0">
+                and classIDB=#{classIDB}
+            </if>
+            <if test="teacherIDB !=null and teacherIDB>0">
+                and teacherIDB=#{teacherIDB}
+            </if>
+            <if test="subjectNameC!=null and subjectNameC!=''">
+                and subjectNameC like CONCAT('%',#{subjectNameC},'%')
+            </if>
+            <if test="roomIDC!=null and roomIDC!=''">
+                and roomIDC like CONCAT('%',#{roomIDC},'%')
+            </if>
+            <if test="classIDC !=null and classIDC>0">
+                and classIDC=#{classIDC}
+            </if>
+            <if test="teacherIDC !=null and teacherIDC>0">
+                and teacherIDC=#{teacherIDC}
+            </if>
+            <if test="subjectNameD!=null and subjectNameD!=''">
+                and subjectNameD like CONCAT('%',#{subjectNameD},'%')
+            </if>
+            <if test="roomIDD!=null and roomIDD!=''">
+                and roomIDD like CONCAT('%',#{roomIDD},'%')
+            </if>
+            <if test="classIDD !=null and classIDD>0">
+                and classIDD=#{classIDD}
+            </if>
+            <if test="teacherIDD !=null and teacherIDD>0">
+                and teacherIDD=#{teacherIDD}
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectLessonByPage" parameterType="LessonDTO" resultMap="lessonList">
+        select lessonID ,lessonDate ,subjectNameA ,roomIDA ,classIDA ,teacherIDA ,subjectNameB ,roomIDB ,classIDB
+        ,teacherIDB ,subjectNameC ,roomIDC ,classIDC ,teacherIDC ,subjectNameD ,roomIDD ,classIDD ,teacherIDD
+        from lesson
+        <trim prefix="where" prefixOverrides="and">
+            <if test="lessonDate!=null and lessonDate!=''">
+                and lessonDate like CONCAT('%',#{lessonDate},'%')
+            </if>
+            <if test="subjectNameA!=null and subjectNameA!=''">
+                and subjectNameA like CONCAT('%',#{subjectNameA},'%')
+            </if>
+            <if test="roomIDA!=null and roomIDA!=''">
+                and roomIDA like CONCAT('%',#{roomIDA},'%')
+            </if>
+            <if test="classIDA !=null and classIDA>0">
+                and classIDA=#{classIDA}
+            </if>
+            <if test="teacherIDA !=null and teacherIDA>0">
+                and teacherIDA=#{teacherIDA}
+            </if>
+            <if test="subjectNameB!=null and subjectNameB!=''">
+                and subjectNameB like CONCAT('%',#{subjectNameB},'%')
+            </if>
+            <if test="roomIDB!=null and roomIDB!=''">
+                and roomIDB like CONCAT('%',#{roomIDB},'%')
+            </if>
+            <if test="classIDB !=null and classIDB>0">
+                and classIDB=#{classIDB}
+            </if>
+            <if test="teacherIDB !=null and teacherIDB>0">
+                and teacherIDB=#{teacherIDB}
+            </if>
+            <if test="subjectNameC!=null and subjectNameC!=''">
+                and subjectNameC like CONCAT('%',#{subjectNameC},'%')
+            </if>
+            <if test="roomIDC!=null and roomIDC!=''">
+                and roomIDC like CONCAT('%',#{roomIDC},'%')
+            </if>
+            <if test="classIDC !=null and classIDC>0">
+                and classIDC=#{classIDC}
+            </if>
+            <if test="teacherIDC !=null and teacherIDC>0">
+                and teacherIDC=#{teacherIDC}
+            </if>
+            <if test="subjectNameD!=null and subjectNameD!=''">
+                and subjectNameD like CONCAT('%',#{subjectNameD},'%')
+            </if>
+            <if test="roomIDD!=null and roomIDD!=''">
+                and roomIDD like CONCAT('%',#{roomIDD},'%')
+            </if>
+            <if test="classIDD !=null and classIDD>0">
+                and classIDD=#{classIDD}
+            </if>
+            <if test="teacherIDD !=null and teacherIDD>0">
+                and teacherIDD=#{teacherIDD}
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+</mapper>
+

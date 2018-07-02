@@ -1,0 +1,1 @@
+server=127.0.0.1;User ID=root;Password=root;database=teacher;port=3306;

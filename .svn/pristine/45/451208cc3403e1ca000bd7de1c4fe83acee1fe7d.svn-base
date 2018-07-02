@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.DictionaryMapper">
+    <cache></cache>
+    <resultMap type="Dictionary" id="dictionaryInfo" >
+       <id property="dictionaryID" column="dictionaryID"></id>
+       <result property="dictionaryName" column="dictionaryName"></result>
+       <result property="dictionaryCode" column="dictionaryCode"></result>
+       <result property="isEnabled" column="isEnabled"></result>
+       <result property="detailID" column="detailID"></result>
+       <result property="attrName" column="attrName"></result>
+       <result property="showOrder" column="showOrder"></result>
+   </resultMap>
+
+    <select id="selDictionaryByType" parameterType="String" resultMap="dictionaryInfo">
+        select dic.dictionaryID,dic.dictionaryName,dic.dictionaryCode,dic.isEnabled,dd.detailID,dd.attrName,dd.showOrder from dictionary as dic inner join dictionarydetail as dd on dic.dictionaryID=dd.dictionaryID
+        where dic.dictionaryCode=#{dictionaryCode} and dd.isEnabled=1 order by dd.showOrder asc
+    </select>
+</mapper>
+

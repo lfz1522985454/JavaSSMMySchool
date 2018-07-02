@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.SkillMapper">
+	<cache></cache>
+	<resultMap type="Skill" id="skillList">
+
+		<id column="skillId" property="skillId" />
+		<result column="skillName" property="skillName" />
+		<result column="fatherId" property="fatherId" />
+		<result column="countTopic" property="countTopic" />
+		<result column="isEnabled" property="isEnabled" />
+
+	</resultMap>
+
+	<select id="selectSkillAll" resultMap="skillList">
+		select * from skill
+	</select>
+
+	<select id="selectSillAllCount" resultMap="skillList">
+		select
+		t.skillId,s.fatherId,s.skillName,count(t.topicId) as countTopic from topic
+		as t INNER JOIN skill as s on t.skillId=s.skillId where t.opicTypeId=#{opicTypeId} and s.fatherId=#{skillId}
+		GROUP BY t.skillId
+	</select>
+
+	<select id="selectSkillById" parameterType="int" resultMap="skillList">
+		select skillId,fatherId,skillName,isEnabled from skill where fatherId=#{fatherId}
+	</select>
+
+
+	<!-- 根据条件返回所有题目 -->
+	<select id="selectTopicWhereSkillId" resultMap="skillList">
+		select skillName,count(topicId) as countTopic from topic as t
+		INNER JOIN skill as s on s.skillId=t.skillId
+		where s.skillId=#{skillId} and t.opicTypeId=#{opicTypeId}
+	</select>
+</mapper>

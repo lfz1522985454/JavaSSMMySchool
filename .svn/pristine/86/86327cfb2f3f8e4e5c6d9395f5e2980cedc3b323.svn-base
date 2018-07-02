@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.WorklogMapper">
+	<cache></cache>
+	<resultMap type="Worklog" id="worklogList">
+		<id column="logid" property="logid" />
+		<result column="beginDate" property="beginDate" /><!---->
+		<result column="endDate" property="endDate" /><!---->
+		<result column="diffDate" property="diffDate" /><!---->
+		<result column="wordCount" property="wordCount" /><!---->
+		<result column="lastIP" property="lastIP" /><!---->
+		<result column="classid" property="classid" /><!---->
+		<result column="stuid" property="stuid" /><!---->
+		<result column="workid" property="workid" /><!---->
+	</resultMap>
+	<!--向插入数据-->
+	<insert id="insertWorklog" parameterType="Worklog">
+		insert into worklog
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="beginDate!=null and beginDate!=''">
+				beginDate,
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				endDate,
+			</if>
+			<if test="diffDate !=null and diffDate>0">
+				diffDate,
+			</if>
+			<if test="wordCount !=null and wordCount>0">
+				wordCount,
+			</if>
+			<if test="lastIP!=null and lastIP!=''">
+				lastIP,
+			</if>
+			<if test="classid !=null and classid>0">
+				classid,
+			</if>
+			<if test="stuid !=null and stuid>0">
+				stuid,
+			</if>
+			<if test="workid !=null and workid>0">
+				workid,
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="beginDate!=null and beginDate!=''">
+				#{beginDate},
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				#{endDate},
+			</if>
+			<if test="diffDate !=null and diffDate>0">
+				#{diffDate},
+			</if>
+			<if test="wordCount !=null and wordCount>0">
+				#{wordCount},
+			</if>
+			<if test="lastIP!=null and lastIP!=''">
+				#{lastIP},
+			</if>
+			<if test="classid !=null and classid>0">
+				#{classid},
+			</if>
+			<if test="stuid !=null and stuid>0">
+				#{stuid},
+			</if>
+			<if test="workid !=null and workid>0">
+				#{workid},
+			</if>
+		</trim>
+	</insert>
+
+	<!--根据主键查询一个数据-->
+	<select id="selectWorklogByID" parameterType="int"  resultMap="worklogList">
+		select logid ,beginDate ,endDate ,diffDate ,wordCount ,lastIP ,classid ,stuid ,workid
+		from worklog where logid=#{id}
+	</select>
+
+	<!--修改数据-->
+	<update id="updateWorklog" parameterType="Worklog">
+		update worklog
+		<trim prefix="set" suffix="where logid=#{logid}" suffixOverrides=",">
+		<if test="beginDate!=null and beginDate!=''">
+			beginDate=#{beginDate},
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			endDate=#{endDate},
+		</if>
+		<if test="diffDate !=null and diffDate>0">
+			diffDate=#{diffDate},
+		</if>
+		<if test="wordCount !=null and wordCount>0">
+			wordCount=#{wordCount},
+		</if>
+		<if test="lastIP!=null and lastIP!=''">
+			lastIP=#{lastIP},
+		</if>
+		<if test="classid !=null and classid>0">
+			classid=#{classid},
+		</if>
+		<if test="stuid !=null and stuid>0">
+			stuid=#{stuid},
+		</if>
+		<if test="workid !=null and workid>0">
+			workid=#{workid},
+		</if>
+		</trim>
+	</update>
+
+	<!--修改的启用状态-->
+	<update id="updateWorklogEnabledByID">
+		update  set isEnabled =#{value} where logid=#{id}
+	</update>
+
+	<!--删除指定主键的数据-->
+	<delete id="deleteWorklog" parameterType="int">
+		delete from worklog where logid=#{id}
+	</delete>
+
+	<!--查询全部数据-->
+	<select id="selectWorklogAll"  resultMap="worklogList">
+		select logid ,beginDate ,endDate ,diffDate ,wordCount ,lastIP ,classid ,stuid ,workid
+		from worklog
+	</select>
+
+	<!--根据条件查询数据-->
+	<select id="selectWorklogByWhere"  parameterType="WorklogDTO"  resultMap="worklogList">
+		select logid ,beginDate ,endDate ,diffDate ,wordCount ,lastIP ,classid ,stuid ,workid
+		from worklog
+		<trim prefix="where" prefixOverrides="and">
+			<if test="beginDate!=null and beginDate!=''">
+				and beginDate like CONCAT('%',#{beginDate},'%')
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and endDate like CONCAT('%',#{endDate},'%')
+			</if>
+			<if test="diffDate !=null and diffDate>0">
+				and diffDate=#{diffDate}
+			</if>
+			<if test="wordCount !=null and wordCount>0">
+				and wordCount=#{wordCount}
+			</if>
+			<if test="lastIP!=null and lastIP!=''">
+				and lastIP like CONCAT('%',#{lastIP},'%')
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+			<if test="stuid !=null and stuid>0">
+				and stuid=#{stuid}
+			</if>
+			<if test="workid !=null and workid>0">
+				and workid=#{workid}
+			</if>
+		</trim>
+	</select>
+
+	<!--根据条件查询满足条件的记录数-->
+	<select id="selectWorklogCountByWhere"  parameterType="WorklogDTO" resultType="int">
+		select count(logid)
+		from worklog
+		<trim prefix="where" prefixOverrides="and">
+			<if test="beginDate!=null and beginDate!=''">
+				and beginDate like CONCAT('%',#{beginDate},'%')
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and endDate like CONCAT('%',#{endDate},'%')
+			</if>
+			<if test="diffDate !=null and diffDate>0">
+				and diffDate=#{diffDate}
+			</if>
+			<if test="wordCount !=null and wordCount>0">
+				and wordCount=#{wordCount}
+			</if>
+			<if test="lastIP!=null and lastIP!=''">
+				and lastIP like CONCAT('%',#{lastIP},'%')
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+			<if test="stuid !=null and stuid>0">
+				and stuid=#{stuid}
+			</if>
+			<if test="workid !=null and workid>0">
+				and workid=#{workid}
+			</if>
+		</trim>
+	</select>
+
+	<!--得到数据表满足查询条件的分页记录-->
+	<select id="selectWorklogByPage"  parameterType="WorklogDTO" resultMap="worklogList">
+		select logid ,beginDate ,endDate ,diffDate ,wordCount ,lastIP ,classid ,stuid ,workid
+		from worklog
+		<trim prefix="where" prefixOverrides="and">
+			<if test="beginDate!=null and beginDate!=''">
+				and beginDate like CONCAT('%',#{beginDate},'%')
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and endDate like CONCAT('%',#{endDate},'%')
+			</if>
+			<if test="diffDate !=null and diffDate>0">
+				and diffDate=#{diffDate}
+			</if>
+			<if test="wordCount !=null and wordCount>0">
+				and wordCount=#{wordCount}
+			</if>
+			<if test="lastIP!=null and lastIP!=''">
+				and lastIP like CONCAT('%',#{lastIP},'%')
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+			<if test="stuid !=null and stuid>0">
+				and stuid=#{stuid}
+			</if>
+			<if test="workid !=null and workid>0">
+				and workid=#{workid}
+			</if>
+		</trim>
+		LIMIT #{fromTo},#{pageSize}
+	</select>
+</mapper>
+

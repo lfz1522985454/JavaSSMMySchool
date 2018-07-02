@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.SpecialTrainMapper">
+
+	<resultMap type="SpecialTrain" id="specialTrainList">
+		<id column="specialTrainId" property="specialTrainId" />
+		<result column="skillId" property="skillId" />
+		<result column="count" property="count" />
+		<result column="correctCount" property="correctCount" />
+		<result column="studentId" property="studentId" />
+		<result column="studentName" property="studentName" />
+		<result column="classId" property="classId" />
+		<result column="className" property="className" />
+		<result column="sumCount" property="sumCount" />
+		<result column="sumCorrectCount" property="sumCorrectCount" />
+		<result column="sumSkillIdCount" property="sumSkillIdCount" />
+		<result column="skillIdcount" property="skillIdcount" />
+	</resultMap>
+	<!-- 增加答题信息 -->
+	<insert id="insertspecialTrain" parameterType="SpecialTrain">
+		insert into
+		SpecialTrain(skillId,count,correctCount,studentId,classId,skillIdcount)
+		values(#{skillId},#{count},#{correctCount},#{studentId},#{classId},#{count})
+	</insert>
+	<!-- 个人答题信息 -->
+	<select id="selectSpecialTrainByStudentAndSkillId" resultMap="specialTrainList">
+		select * from specialtrain where studentId=#{studentId} and
+		skillId=#{skillId}
+	</select>
+	<!-- 本班的排行榜 -->
+	<select id="selectSpecialTrainPHByClassId" resultMap="specialTrainList">
+		select
+		p.classId,p.specialtrainId, SUM(p.count) as
+		sumCount,SUM(p.correctCount) as
+		sumCorrectCount
+		,p.studentId,s.studentName from specialtrain as p
+		INNER JOIN student as
+		s on s.studentId=p.studentId
+		where p.classId=#{classId}
+		GROUP BY
+		p.studentId
+
+		ORDER BY sumCorrectCount desc
+	</select>
+	<!-- 全校排行榜 TOP10 -->
+	<select id="selectSpecialTrainPH" resultMap="specialTrainList">
+		select
+		p.classId,p.specialtrainId, SUM(p.count) as
+		sumCount,SUM(p.correctCount) as
+		sumCorrectCount
+		,p.studentId,s.studentName,c.className from specialtrain as p
+		INNER
+		JOIN student as
+		s on s.studentId=p.studentId
+		INNER JOIN class as c on c.classId=p.classId
+		GROUP BY
+		p.studentId
+		ORDER BY sumCorrectCount desc LIMIT 0,10
+	</select>
+
+	<!-- 该知识点总答题数 -->
+	<select id="selectSpecialTrainBySkillIdAndStudentIdReturnCount"
+		resultType="int">
+		select sum(skillIdcount) as skillIdcount from specialtrain
+		where studentId=#{studentId}
+		and skillId=#{skillId}
+	</select>
+
+
+	<update id="updateSpecialTrainBySkillIdAndStudentId">
+		update specialtrain set skillIdcount=0 where
+		skillId=#{skillId} and studentId=#{studentId}
+	</update>
+	<!-- 加载该学生所有知识点已做题数 -->
+	<select id="selectSpecialTrainByStudentAndSkillCount" resultMap="specialTrainList">
+		select skillId,studentId,SUM(skillIdcount) as skillIdcount from
+		specialtrain where studentId=#{studentId} GROUP BY skillId
+	</select>
+</mapper>

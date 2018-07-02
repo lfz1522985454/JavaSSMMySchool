@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.ProgressMapper">
+	<cache></cache>
+	<resultMap type="Progress" id="progressInfo">
+		<id property="progressId" column="progressId"/>
+		<result property="topicCount" column="topicCount"/>
+		<result property="alreadySeen" column="alreadySeen"/>
+		<result property="skillId" column="skillId"/>
+		<result property="opicTypeId" column="opicTypeId"/>
+		<result property="studentId" column="studentId"/>
+		<result property="studentName" column="studentName"/>
+		<result property="classId" column="classId"/>
+		<result property="className" column="className"/>
+		<result property="countStudentTime" column="countStudentTime"/>
+		<result property="avgStudentTime" column="avgStudentTime"/>
+		<result property="startDate" column="startDate"/>
+		<result property="endDate" column="endDate"/>
+		<result property="lastLoginTime" column="lastLoginTime"/>	
+	</resultMap>
+	
+	<select id="selectProgressCount" parameterType="ProgressDTO" resultType="int">
+		SELECT count(distinct studentName) as countResult FROM progress AS p inner JOIN
+		student AS s on p.studentId=s.studentId INNER JOIN 
+		class AS c on p.classId=c.classId
+		<trim prefix="where" prefixOverrides="and">
+			<if test="studentName!=null">
+				and s.studentName like CONCAT('%',#{studentName},'%')
+			</if>
+			<if test="classId>0">
+			 	and p.classId=#{classId}
+			</if>
+			<if test="opicTypeId>0">
+				and p.opicTypeId=#{opicTypeId}
+			</if>
+			<if test="startDate!=null and endDate!=null" >
+				and p.startDate  between #{startDate} and #{endDate}
+			</if>
+		</trim>
+	</select>
+	
+	<select id="selectProgressByPage" parameterType="ProgressDTO" resultMap="progressInfo">
+		SELECT p.progressId,count(p.topicId) as topicCount,p.alreadySeen,p.skillId,p.opicTypeId,p.studentId,p.classId,
+		CAST(sum(p.studyTime/3600) as DECIMAL(18,2))as countStudentTime,
+		ceiling(avg(p.studyTime)) as avgStudentTime,p.startDate,s.lastLoginTime,
+		s.studentName,c.className FROM progress AS p inner JOIN
+		student AS s on p.studentId=s.studentId INNER JOIN 
+		class AS c on p.classId=c.classId GROUP BY p.studentId
+		<trim prefix="having" prefixOverrides="and">
+			<if test="studentName!=null">
+				and s.studentName like CONCAT('%',#{studentName},'%')
+			</if>
+			<if test="classId>0">
+				and p.classId=#{classId}
+			</if>
+			<if test="opicTypeId>0">
+				and p.opicTypeId=#{opicTypeId}
+			</if>
+			<if test="startDate!=null and endDate!=null" >
+				and p.startDate  between #{startDate} and #{endDate}
+			</if>
+		</trim>
+		 LIMIT #{fromTo},#{pageSize}
+	</select>
+
+
+</mapper>

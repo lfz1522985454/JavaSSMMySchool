@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.SpecialtrainScoreMapper">
+	<cache />
+	<resultMap type="SpecialtrainScore" id="SpecialtrainScoreList">
+		<id column="scoreId" property="scoreId" />
+		<result column="studentId" property="studentId" />
+		<result column="studentAnswer" property="studentAnswer" />
+		<result column="topicId" property="topicId" />
+		<result column="skillId" property="skillId" />
+		<result column="opicTypeId" property="opicTypeId" />
+		<result column="topicName" property="topicName" />
+		<result column="topicImg" property="topicImg" />
+		<result column="optionA" property="optionA" />
+		<result column="optionB" property="optionB" />
+		<result column="optionC" property="optionC" />
+		<result column="optionD" property="optionD" />
+		<result column="optionE" property="optionE" />
+		<result column="optionF" property="optionF" />
+		<result column="modelAnswer" property="modelAnswer" />
+		<result column="topicAnalysis" property="topicAnalysis" />
+		<result column="topicErroCount" property="topicErroCount" />
+		<result column="createtionDate" property="createtionDate" />
+		<result column="createdBy" property="createdBy" />
+		<result column="isEnabled" property="isEnabled" />
+		<result column="testId" property="testId" />
+		<result column="isStamp" property="isStamp" />
+		<result column="stampBy" property="stampBy" />
+		<result column="isEnable" property="isEnable" />
+	</resultMap>
+
+	<insert id="insertSpecialtrainScore" parameterType="SpecialtrainScore">
+		insert into
+		specialtrainscore(studentId,topicId,studentAnswer,isEnable,testId)
+		VALUES(#{studentId},#{topicId},#{studentAnswer},0,#{testId})
+	</insert>
+	<select id="selectSpecialtrainScoreByStudentId" resultMap="SpecialtrainScoreList">
+		select * from
+		specialtrainscore as t
+		INNER JOIN topic as p
+		on
+		t.topicId=p.topicId where
+		studentId =#{studentId} order by scoreId desc
+	</select>
+
+	<update id="updateSpecialtrainScoreById">
+		update SpecialtrainScore set isEnable=1
+		where
+		scoreId=#{scoreId}
+	</update>
+
+	<select id="selectSpecialtrainScoreByStudentIdAndTestId"
+		resultMap="SpecialtrainScoreList">
+		select * from specialtrainscore as s INNER JOIN topic as t
+		on s.topicId=t.topicId where s.studentId=#{studentId} and
+		s.testId=#{testId}
+	</select>
+
+</mapper>

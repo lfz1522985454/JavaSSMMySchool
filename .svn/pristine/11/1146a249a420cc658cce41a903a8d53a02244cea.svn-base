@@ -1,0 +1,241 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Java" Inherits="CodeSmith.BaseTemplates.OutputFileCodeTemplate" ResponseEncoding="utf-8" Description="Generates a very simple business object." %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="要生成接口的表" %>
+<%@ Property Name="package" Type="String" Category="Context" Default="com.bdqn.tcmp" Description="设置当前类的包名" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="System.Windows.Forms.Design"%>
+<%@ Assembly Name="System.Design" %>
+package <%=package%>.mapper;
+import java.util.*;
+import <%=package%>.entity.*;
+import <%=package%>.entity.dto.*;
+
+/**
+ * <%= SourceTable.Description %>数据访问层接口
+ * @author admin
+ */
+public interface <%= GetClassName(SourceTable) %>Mapper{
+	/**
+	 * 向<%= SourceTable.Description %>插入数据
+	 * @param entity
+	 *            带有要插入数据的<%= SourceTable.Description %>实体
+	 * @return 受影响行数
+	 */
+ int insert<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %> entity);
+	/**
+	 * 根据主键查询一个<%= SourceTable.Description %>数据
+	 * @param id
+	 *            表的主键
+	 * @return <%= GetClassName(SourceTable) %>对象
+	 */
+ <%= GetClassName(SourceTable) %> select<%= GetClassName(SourceTable) %>ByID(int id);
+	/**
+	 * 修改<%= SourceTable.Description %>数据
+	 * @param entity
+	 *            带有要修改数据的<%= SourceTable.Description %>实体
+	 * @return 受影响行数
+	 */
+ int update<%= GetClassName(SourceTable) %>(<%= GetClassName(SourceTable) %> entity);
+
+	/**
+	 * 修改<%= SourceTable.Description %>的启用状态
+	 * @param id
+	 *            表的主键
+	 * @return 受影响行数
+	 */
+ int update<%= GetClassName(SourceTable) %>EnabledByID(@Param("id")int id,@Param("value")int value);
+	/**
+	 * 删除指定主键的<%= SourceTable.Description %>数据
+	 * @param id
+	 *            表的主键
+	 * @return 受影响行数
+	 */
+ int delete<%= GetClassName(SourceTable) %>(int id);
+	/**
+	 * 查询全部<%= SourceTable.Description %>数据
+	 * @return <%= GetClassName(SourceTable) %>对象集合
+	 */
+ List<<%= GetClassName(SourceTable) %>> select<%= GetClassName(SourceTable) %>All();
+	/**
+	 * 根据条件查询<%= SourceTable.Description %>数据
+	 * @param dto
+	 *            <%= SourceTable.Description %>实体类查询条件
+	 * @return <%= GetClassName(SourceTable) %>对象集合
+	 */
+ List<<%= GetClassName(SourceTable) %>> select<%= GetClassName(SourceTable) %>ByWhere(<%= GetClassName(SourceTable) %>DTO dto);
+
+	/**
+	 * 根据条件查询满足条件的记录数
+	 * @param dto
+	 *            <%= SourceTable.Description %>实体类查询条件
+	 * @return 满足条件的记录数
+	 */
+ int select<%= GetClassName(SourceTable) %>CountByWhere(<%= GetClassName(SourceTable) %>DTO dto);
+	/**
+	 * 得到数据表<%= GetClassName(SourceTable) %>满足查询条件的分页记录
+     * @param dto
+	 *            <%= SourceTable.Description %>实体类查询条件
+	 * @return <%= GetClassName(SourceTable) %>对象集合
+	 */
+ List<<%= GetClassName(SourceTable) %>> select<%= GetClassName(SourceTable) %>ByPage(<%= GetClassName(SourceTable) %>DTO dto);
+}
+    
+
+
+<script runat="template">
+
+	public string GetCSharpVariableType(TableSchema table)
+	{
+		return GetClassName(table);
+	}
+
+    public string GetCamelCaseName(string value)
+    {
+        return value.Substring(0, 1).ToLower() + value.Substring(1);
+    }
+
+    public string ConvertFirstCharToUpper(string value)
+    {
+        return value.Substring(0, 1).ToUpper() + value.Substring(1);
+    }
+
+    public string GetClassName(TableSchema table)
+    {
+		if(table==null)
+		{
+		    return null;
+		}
+		if(table.Name.IndexOf("_")>-1)
+		{
+			string lower=table.Name.Substring(table.Name.IndexOf("_"),2);
+			string result= table.Name.Substring(0, 1).ToUpper() + table.Name.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+			if(result.IndexOf("_")>-1)
+			{
+				lower=result.Substring(result.IndexOf("_"),2);
+				result= result.Substring(0, 1).ToUpper() + result.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+				if(result.IndexOf("_")>-1)
+				{
+					lower=result.Substring(result.IndexOf("_"),2);
+					result= result.Substring(0, 1).ToUpper() + result.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+					if(result.IndexOf("_")>-1)
+					{
+						lower=result.Substring(result.IndexOf("_"),2);
+						result= result.Substring(0, 1).ToUpper() + result.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+					}
+				}
+			}
+			return result;
+		}else
+		{
+			return table.Name.Substring(0, 1).ToUpper() + table.Name.Substring(1);
+		}
+    }
+
+	public string GetLowerCaseName(string value)
+    {
+	    return value.ToLower();
+    }
+	
+	public string GetModuleInstanceName(TableSchema table)
+	{
+		return "o"+table.Name+"Info";
+	}
+	
+	public string GetCSharpVariableType(ColumnSchema column)
+    {
+		if (column.Name.EndsWith("TypeCode")) return column.Name;
+		
+		switch (column.DataType)
+		{
+			case DbType.AnsiString: return "string";
+			case DbType.AnsiStringFixedLength: return "string";
+			case DbType.Binary: return "byte[]";
+			case DbType.Boolean: return "boolean";
+			case DbType.Byte: return "byte";
+			case DbType.Currency: return "decimal";
+			case DbType.Date: return "DateTime";
+			case DbType.DateTime: return "DateTime";
+			case DbType.Decimal: return "decimal";
+			case DbType.Double: return "double";
+			case DbType.Guid: return "Guid";
+			case DbType.Int16: return "short";
+			case DbType.Int32: return "int";
+			case DbType.Int64: return "long";
+			case DbType.Object: return "object";
+			case DbType.SByte: return "sbyte";
+			case DbType.Single: return "float";
+			case DbType.String: return "string";
+			case DbType.StringFixedLength: return "string";
+			case DbType.Time: return "TimeSpan";
+			case DbType.UInt16: return "ushort";
+			case DbType.UInt32: return "uint";
+			case DbType.UInt64: return "ulong";
+			case DbType.VarNumeric: return "decimal";
+			default:
+			{
+				return "__UNKNOWN__" + column.NativeType;
+			}
+		}
+	}
+	public string GetPrimaryKeyCSharpType()
+	{
+		return GetCSharpVariableType(SourceTable.PrimaryKey.MemberColumns[0]);
+	}
+	public string GetValidateInputString()
+	{
+		DbType dbtype = SourceTable.PrimaryKey.MemberColumns[0].DataType;
+		string result = String.Empty;
+		switch(dbtype)
+		{
+			case DbType.Byte:
+			case DbType.Currency:
+			case DbType.Decimal:
+			case DbType.Int16:
+			case DbType.Int32:
+			case DbType.Int64:
+			    result = "if(" + GetCamelCaseName(SourceTable.PrimaryKey.MemberColumns[0].Name) + "<0)";
+			    break;
+			case DbType.AnsiStringFixedLength:
+			case DbType.AnsiString:
+			case DbType.String:
+			case DbType.StringFixedLength:
+			case DbType.Binary:
+			    result = "if(" + GetCamelCaseName(SourceTable.PrimaryKey.MemberColumns[0].Name) + ".Length==0)";
+			    break;
+			break;
+			case DbType.Guid:
+			    result = "if(" + GetCamelCaseName(SourceTable.PrimaryKey.MemberColumns[0].Name) + "==null)";
+			    break;
+			case DbType.DateTime:
+			case DbType.Date:
+			    result = "if(" + GetCamelCaseName(SourceTable.PrimaryKey.MemberColumns[0].Name) + "==null)";
+			    break;
+			default:
+		        result = "if(" + GetCamelCaseName(SourceTable.PrimaryKey.MemberColumns[0].Name) + "==null)";
+			    break;
+		}
+		return result;
+	}
+	
+	public override string GetFileName()
+	{
+		if ( base.OutputFile.Length == 0 )
+			return "";
+		return base.OutputFile.Substring(0,base.OutputFile.LastIndexOf(@"\") + 1)  + this.GetClassName(this.SourceTable) + "Mapper.java";
+	}
+	
+	// Override the OutputFile property and assign our specific settings to it.
+	[FileDialogAttribute(FileDialogType.Save, Title="Select Output File", Filter="java Files (*.java)|*.java", DefaultExtension=".java")]
+	public override string OutputFile
+	{
+		get {return this.GetFileName();}
+		set {base.OutputFile = value;}
+	}
+</script>

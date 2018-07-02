@@ -1,0 +1,512 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Java" Description="Generates a very simple business object." ResponseEncoding="UTF-8"  %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="SourceTable that the object is based on." %>
+<%@ Property Name="package" Type="String" Category="Context" Default="com.bdqn.tcmp" Description="设置当前类的包名" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+
+package <%=package%>.controller;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.util.*;
+import javax.annotation.Resource;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+import com.alibaba.fastjson.JSON;
+import <%=package%>.service.*;
+import <%=package%>.service.impl.*;
+import <%=package%>.entity.*;
+import <%=package%>.dto.*;
+import <%=package%>.util.*;
+
+@Controller
+@RequestMapping("<%=GetCamelCaseName(GetClassName(SourceTable))%>")
+public class <%= GetBigCaseName(GetClassName(SourceTable))%>Controller{
+	@Resource
+    private <%=GetBigCaseName(GetClassName(SourceTable)) %>Service <%=GetCamelCaseName(GetClassName(SourceTable))%>Service;
+	/**
+	 * 向<%= SourceTable.Description %>插入数据
+	 * @param entity
+	 *            带有要插入数据的<%= SourceTable.Description %>实体类
+	 * @return 受影响行数
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/add.do",method = RequestMethod.POST)
+    public int insert<%= GetBigCaseName(GetClassName(SourceTable)) %>(<%= GetBigCaseName(GetClassName(SourceTable)) %> entity){
+        return <%=GetCamelCaseName(GetClassName(SourceTable))%>Service.insert<%= GetBigCaseName(GetClassName(SourceTable)) %>(entity);
+    }
+	/**
+	 * 根据主键查询一个<%= SourceTable.Description %>数据
+	 * @param id
+	 *            表的主键
+	 * @return <%= GetBigCaseName(GetClassName(SourceTable)) %>对象
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/byid.do",method = RequestMethod.POST)
+    public <%= GetBigCaseName(GetClassName(SourceTable)) %> select<%= GetBigCaseName(GetClassName(SourceTable)) %>ByID(int id){
+        return <%=GetCamelCaseName(GetClassName(SourceTable))%>Service.select<%= GetBigCaseName(GetClassName(SourceTable)) %>ByID(id);    
+    }
+	
+	/**
+	 * 修改<%= SourceTable.Description %>数据
+	 * @param entity
+	 *            带有要修改数据的<%= SourceTable.Description %>实体类
+	 * @return 受影响行数
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/edit.do",method = RequestMethod.POST)
+    public int update<%= GetBigCaseName(GetClassName(SourceTable)) %>(<%= GetBigCaseName(GetClassName(SourceTable)) %> entity){
+        return <%=GetCamelCaseName(GetClassName(SourceTable))%>Service.update<%= GetBigCaseName(GetClassName(SourceTable)) %>(entity);
+    }
+	/**
+	 * 修改<%= SourceTable.Description %>的启用状态
+	 * @param id
+	 *            表的主键
+	 * @return 受影响行数
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/isen.do",method = RequestMethod.POST)
+ 	public int update<%= GetBigCaseName(GetClassName(SourceTable)) %>EnabledByID(int id,int value){
+		 return <%=GetCamelCaseName(GetClassName(SourceTable))%>Service.update<%= GetBigCaseName(GetClassName(SourceTable)) %>EnabledByID(id,value);
+	}
+	/**
+	 * 删除指定主键的<%= SourceTable.Description %>数据
+	 * @param id
+	 *            表的主键
+	 * @return 受影响行数
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/del.do",method = RequestMethod.POST)
+    public int delete<%= GetBigCaseName(GetClassName(SourceTable)) %>(int id){
+        return <%=GetCamelCaseName(GetClassName(SourceTable))%>Service.delete<%= GetBigCaseName(GetClassName(SourceTable)) %>(id);
+    }
+	/**
+	 * 查询全部<%= SourceTable.Description %>数据
+	 * @return <%= GetBigCaseName(GetClassName(SourceTable)) %>对象集合
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/all.do",method = RequestMethod.POST)
+    public List<<%= GetBigCaseName(GetClassName(SourceTable)) %>> select<%= GetBigCaseName(GetClassName(SourceTable)) %>All(){
+        return <%=GetCamelCaseName(GetClassName(SourceTable))%>Service.select<%= GetBigCaseName(GetClassName(SourceTable)) %>All();   
+    }
+		/**
+	 * 根据条件查询<%= SourceTable.Description %>数据
+	 * @param dto
+	 *            <%= SourceTable.Description %>实体类查询条件
+	 * @return <%= GetBigCaseName(GetClassName(SourceTable)) %>对象集合
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/where.do",method = RequestMethod.POST)
+ 	public List<<%= GetBigCaseName(GetClassName(SourceTable)) %>> select<%= GetBigCaseName(GetClassName(SourceTable)) %>ByWhere(<%= GetBigCaseName(GetClassName(SourceTable)) %>DTO dto){
+		 return <%=GetCamelCaseName(GetClassName(SourceTable))%>Service.select<%= GetBigCaseName(GetClassName(SourceTable)) %>ByWhere(dto);   
+	}
+
+	/**
+	 * 得到数据表<%= GetBigCaseName(GetClassName(SourceTable)) %>满足查询条件的分页记录
+     * @param dto
+	 *            <%= SourceTable.Description %>实体类查询条件
+	 * @return <%= GetBigCaseName(GetClassName(SourceTable)) %>对象集合
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/page.do",method = RequestMethod.POST)
+	public Map<String, Object> select<%= GetBigCaseName(GetClassName(SourceTable)) %>ByPage(<%= GetBigCaseName(GetClassName(SourceTable)) %>DTO dto){
+		Map<String, Object> map = new HashMap<String, Object>();
+		dto.setPageSize(5);
+		dto.setRowCount(<%=GetCamelCaseName(GetClassName(SourceTable))%>Service.select<%= GetBigCaseName(GetClassName(SourceTable)) %>CountByWhere(dto));
+		map.put("page", dto);
+		map.put("<%=GetCamelCaseName(GetClassName(SourceTable))%>List", <%=GetCamelCaseName(GetBigCaseName(GetClassName(SourceTable)))%>Service.select<%= GetBigCaseName(GetClassName(SourceTable)) %>ByPage(dto));
+		return map;   
+	}
+}
+<script runat="template">
+#region script
+public string GetMemberVariableDeclarationStatement(ColumnSchema column)
+{
+	return GetMemberVariableDeclarationStatement("private", column);
+}
+
+public string GetParentTableVariableDeclarationStatement(TableKeySchema foreignKey)
+{
+	return GetParentTableVariableDeclarationStatement("private",foreignKey.PrimaryKeyTable);
+}
+
+public string GetChildrenTableVariableDeclarationStatement(TableKeySchema foreignKey)
+{
+	return GetChildrenTableVariableDeclarationStatement("private",foreignKey.ForeignKeyTable);
+}
+
+public string GetMemberVariableDeclarationStatement(string protectionLevel, ColumnSchema column)
+{
+	string statement = protectionLevel + " ";
+	statement += GetCSharpVariableType(column) + " " + GetMemberVariableName(column);
+	
+	/*string defaultValue = GetMemberVariableDefaultValue(column);
+	if (defaultValue != "")
+	{
+		statement += " = " + defaultValue;
+	}*/
+	
+	statement += ";";
+	
+	return statement;
+}
+
+public string GetParentTableVariableDeclarationStatement(string protectionLevel, TableSchema parentTable)
+{
+	string statement = protectionLevel + " ";
+	statement += GetCSharpVariableType(parentTable) + " " + GetMemberVariableName(parentTable);
+	
+	string defaultValue = "null";
+	if (defaultValue != "")
+	{
+		statement += " = " + defaultValue;
+	}
+	
+	statement += ";";
+	
+	return statement;
+}
+
+public string GetChildrenTableVariableDeclarationStatement(string protectionLevel, TableSchema childrenTable)
+{
+	string statement = protectionLevel + " ";
+	statement += "List<" + GetCSharpVariableType(childrenTable) + "> " + GetMemberVariableName(childrenTable);
+	
+	string defaultValue = "null";
+	if (defaultValue != "")
+	{
+		statement += " = " + defaultValue;
+	}
+	
+	statement += ";";
+	
+	return statement;
+}
+
+public string GetConstructorParameters()
+{
+	string ret = "";
+	foreach(ColumnSchema column in SourceTable.Columns)
+	{
+		ret += GetCSharpVariableType(column) + " " + GetCamelCaseName(GetPropertyName(column)) + ",\n\t\t\t";
+	}
+	return ret.Substring(0, ret.Length - 5);
+}
+
+public string GetAssignValue()
+{
+	string ret = "";
+	foreach(ColumnSchema column in SourceTable.Columns)
+	{
+		ret += "this."+GetMemberVariableName(column) +  (new String(' ', GetPropertyNameMaxLength() - GetPropertyNameLength(column))) + " = " + GetCamelCaseName(GetPropertyName(column)) + ";\n\t\t\t";
+	}
+	return ret;
+}
+
+public string GetReaderAssignmentStatement(ColumnSchema column, int index)
+{
+	string statement = "if (!reader.IsDBNull(" + index.ToString() + ")) ";
+	statement += GetMemberVariableName(column) + " = ";
+	
+	if (column.Name.EndsWith("TypeCode")) statement += "(" + column.Name + ")";
+	
+	statement += "reader." + GetReaderMethod(column) + "(" + index.ToString() + ");";
+	
+	return statement;
+}
+
+public string GetCamelCaseName(string value)
+{
+	return value.Substring(0, 1).ToLower() + value.Substring(1);
+}
+public string GetBigCaseName(string value)
+{
+	return value.Substring(0, 1).ToUpper() + value.Substring(1);
+}
+
+public string GetMemberVariableName(TableSchema table)
+{
+	//string propertyName = GetPropertyName(column);
+	string propertyName = table.Name;
+	string memberVariableName =  GetCamelCaseName(propertyName);
+	
+	return memberVariableName;
+}
+
+public string GetMemberVariableName(ColumnSchema column)
+{
+	//string propertyName = GetPropertyName(column);
+	string propertyName = column.Name;
+	string memberVariableName = GetCamelCaseName(propertyName);
+	
+	return memberVariableName;
+}
+
+public string GetPropertyName(ColumnSchema column)
+{
+	string propertyName = column.Name;
+	
+	if (propertyName == column.Table.Name + "Name") return "Name";
+	if (propertyName == column.Table.Name + "Description") return "Description";
+	
+	if (propertyName.EndsWith("TypeCode")) propertyName = propertyName.Substring(0, propertyName.Length - 4);
+	
+	return propertyName;
+}
+
+public int GetPropertyNameLength(ColumnSchema column)
+{
+	return (GetPropertyName(column)).Length;
+}
+
+public int GetPropertyNameMaxLength()
+{
+	int ret = 0;
+	foreach(ColumnSchema column in SourceTable.Columns)
+	{
+		ret = ret < GetPropertyNameLength(column)?GetPropertyNameLength(column):ret;
+	}
+	return ret;
+}
+		
+public string GetMemberVariableDefaultValue(ColumnSchema column)
+{
+	if(column.IsPrimaryKeyMember)
+	{
+	    return "";
+	}
+	switch (column.DataType)
+	{
+		case DbType.Guid:
+		{
+			return "Guid.Empty";
+		}
+		case DbType.AnsiString:
+		case DbType.AnsiStringFixedLength:
+		case DbType.String:
+		case DbType.StringFixedLength:
+		{
+			return "String.Empty";
+		}
+		case DbType.DateTime:
+		{
+			return "DateTime.Now";
+		}
+		default:
+		{
+			return "";
+		}
+	}
+}
+
+public string GetCSharpVariableType(TableSchema table)
+{
+	return GetClassName(table);
+}
+
+public string GetCSharpVariableType(ColumnSchema column)
+{
+	if (column.Name.EndsWith("TypeCode")) return column.Name;
+	
+	switch (column.DataType)
+	{
+		case DbType.AnsiString: return "String";
+		case DbType.AnsiStringFixedLength: return "String";
+		case DbType.Binary: return "byte[]";
+		case DbType.Boolean: return "boolean";
+		case DbType.Byte: return "int";
+		case DbType.Currency: return "double";
+		case DbType.Date: return "java.sql.Date";
+		case DbType.DateTime: return "java.sql.Date";
+		case DbType.Decimal: return "double";
+		case DbType.Double: return "double";
+		case DbType.Guid: return "Guid";
+		case DbType.Int16: return "short";
+		case DbType.Int32: return "int";
+		case DbType.Int64: return "long";
+		case DbType.Object: return "Object";
+		case DbType.SByte: return "sbyte";
+		case DbType.Single: return "float";
+		case DbType.String: return "String";
+		case DbType.StringFixedLength: return "String";
+		case DbType.Time: return "TimeSpan";
+		case DbType.UInt16: return "ushort";
+		case DbType.UInt32: return "uint";
+		case DbType.UInt64: return "ulong";
+		case DbType.VarNumeric: return "double";
+		default:
+		{
+			return "__UNKNOWN__" + column.NativeType;
+		}
+	}
+}
+public string GetConvertType(ColumnSchema column)
+{
+	if (column.Name.EndsWith("TypeCode")) return column.Name;
+	//
+	switch (column.DataType)
+	{
+		case DbType.AnsiString: return "request.getParameter(\""+GetCamelCaseName(column.Name)+"\")";
+		case DbType.AnsiStringFixedLength: return "request.getParameter(\""+GetCamelCaseName(column.Name)+"\")";
+		case DbType.Binary: return "byte[]";
+		case DbType.Boolean: return "Boolean.parseBoolean(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.Byte: return "Integer.parseInt(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.Currency: return "Double.parseDouble(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.Date: return "java.sql.Date.valueOf(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.DateTime: return "java.sql.Date.valueOf(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.Decimal: return "Double.parseDouble(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.Double: return "Double.parseDouble(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.Guid: return "Guid";
+		case DbType.Int16: return "short";
+		case DbType.Int32: return "Integer.parseInt(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		case DbType.Int64: return "long";
+		case DbType.Object: return "Object";
+		case DbType.SByte: return "sbyte";
+		case DbType.Single: return "float";
+		case DbType.String: return "request.getParameter(\""+GetCamelCaseName(column.Name)+"\")";
+		case DbType.StringFixedLength: return "request.getParameter(\""+GetCamelCaseName(column.Name)+"\")";
+		case DbType.Time: return "TimeSpan";
+		case DbType.UInt16: return "ushort";
+		case DbType.UInt32: return "uint";
+		case DbType.UInt64: return "ulong";
+		case DbType.VarNumeric: return "Double.parseDouble(request.getParameter(\""+GetCamelCaseName(column.Name)+"\"))";
+		default:
+		{
+			return "__UNKNOWN__" + column.NativeType;
+		}
+	}
+}
+
+public string GetReaderMethod(ColumnSchema column)
+{
+	switch (column.DataType)
+	{
+		case DbType.Byte:
+		{
+			return "GetByte";
+		}
+		case DbType.Int16:
+		{
+			return "GetInt16";
+		}
+		case DbType.Int32:
+		{
+			return "GetInt32";
+		}
+		case DbType.Int64:
+		{
+			return "GetInt64";
+		}
+		case DbType.AnsiStringFixedLength:
+		case DbType.AnsiString:
+		case DbType.String:
+		case DbType.StringFixedLength:
+		{
+			return "GetString";
+		}
+		case DbType.Boolean:
+		{
+			return "GetBoolean";
+		}
+		case DbType.Guid:
+		{
+			return "GetGuid";
+		}
+		case DbType.Currency:
+		case DbType.Decimal:
+		{
+			return "GetDecimal";
+		}
+		case DbType.DateTime:
+		case DbType.Date:
+		{
+			return "GetDateTime";
+		}
+		case DbType.Binary:
+		{
+			return "GetBytes";
+		}
+		default:
+		{
+			return "__SQL__" + column.DataType;
+		}
+	}
+}
+
+public string GetClassName(TableSchema table)
+{
+	
+	if(table==null)
+	{
+	    return null;
+	}
+	return table.Name ;
+}
+
+public string GetSqlDbType(ColumnSchema column)
+{
+	switch (column.NativeType)
+	{
+		case "bigint": return "BigInt";
+		case "binary": return "Binary";
+		case "bit": return "Bit";
+		case "char": return "Char";
+		case "datetime": return "DateTime";
+		case "decimal": return "Decimal";
+		case "float": return "Float";
+		case "image": return "Image";
+		case "int": return "Int";
+		case "money": return "Money";
+		case "nchar": return "NChar";
+		case "ntext": return "NText";
+		case "numeric": return "Decimal";
+		case "nvarchar": return "NVarChar";
+		case "real": return "Real";
+		case "smalldatetime": return "SmallDateTime";
+		case "smallint": return "SmallInt";
+		case "smallmoney": return "SmallMoney";
+		case "sql_variant": return "Variant";
+		case "sysname": return "NChar";
+		case "text": return "Text";
+		case "timestamp": return "Timestamp";
+		case "tinyint": return "TinyInt";
+		case "uniqueidentifier": return "UniqueIdentifier";
+		case "varbinary": return "VarBinary";
+		case "varchar": return "VarChar";
+		default: return "__UNKNOWN__" + column.NativeType;
+	}
+}
+
+public string GetPrimaryKeyType(TableSchema table)
+{
+	if (table.PrimaryKey != null)
+	{
+		if (table.PrimaryKey.MemberColumns.Count == 1)
+		{
+			return GetCSharpVariableType(table.PrimaryKey.MemberColumns[0]);
+		}
+		else
+		{
+			throw new ApplicationException("This template will not work on primary keys with more than one member column.");
+		}
+	}
+	else
+	{
+		throw new ApplicationException("This template will only work on tables with a primary key.");
+	}
+}
+
+	
+
+	
+
+
+#endregion script
+
+</script>

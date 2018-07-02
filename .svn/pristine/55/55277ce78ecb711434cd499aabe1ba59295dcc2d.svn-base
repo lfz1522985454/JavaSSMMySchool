@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.CustomtestMapper">
+
+	<resultMap type="Customtest" id="CustomtestList">
+		<id column="customId" property="customId" />
+		<result column="questionId" property="questionId" />
+		<result column="quersionName" property="quersionName" />
+		<result column="startDate" property="startDate" />
+		<result column="endDate" property="endDate" />
+		<result column="studentName" property="studentName" />
+		<result column="teacherId" property="createdBy" />
+		<result column="teacherName" property="createdName" />
+		<result column="creationDate" property="creationDate" />
+		<result column="opicTypeName" property="opicTypeName" />
+		<result column="opicTypeId" property="opicTypeId" />
+		<result column="allocation" property="allocation" />
+	</resultMap>
+	<!-- 查询全部 -->
+	<select id="selectCustomtestByClassId" resultMap="CustomtestList">
+		select
+		c.customId,c.customId,cl.className,q.questionId,q.questionName as
+		quersionName,c.startDate,c.endDate,c.studentName as
+		studentName,t.teacherId as teacherId,t.teacherName as
+		teacherName,c.creationDate,o.opicTypeName as opicTypeName,o.opicTypeId
+		as opicTypeId,q.allocation 
+		from customtest as c INNER
+		JOIN questionpaper as q on
+		c.questionId=q.questionId INNER JOIN
+		teacher as t on
+		q.createdBy=t.teacherId
+		INNER JOIN opictype as o on
+		q.quertionType=o.opicTypeId
+		INNER JOIN class as cl ON
+		c.classId=cl.classId
+		where NOW() &lt; c.endDate and
+		c.classId=#{classId}
+
+	</select>
+
+
+</mapper>

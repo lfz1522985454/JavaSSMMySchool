@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.TaskMapper">
+    <resultMap type="Task" id="TaskList">
+        <id property="taskID" column="taskID"/>
+        <result property="taskName" column="taskName"/>
+        <result property="beginDate" column="beginDate"/>
+        <result property="endDate" column="endDate"/>
+        <result property="studentId" column="studentId"/>
+        <result property="TaskState" column="TaskState"/>
+        <result property="remark" column="remark"/>
+        <result property="visibleLevel" column="visibleLevel"/>
+        <result property="studentName" column="studentName"/>
+        <result property="classId" column="classId"></result>
+        <result property="imgFilePath" column="imgFilePath"/>
+
+    </resultMap>
+
+    <select id="selectTaskByStudentId" resultMap="TaskList">
+		SELECT
+		s.classId,t.taskState,t.taskID,t.taskName,t.beginDate,t.endDate,t.remark,t.visibleLevel,s.studentName,t.studentId,s.imgFilePath
+		FROM Task AS t
+		INNER JOIN student AS s ON t.studentID=s.studentId
+		WHERE
+		t.studentID=#{studentId} AND t.taskState=0
+	</select>
+
+    <insert id="insertStak" parameterType="Task">
+		INSERT into task
+		(
+		taskName,
+		beginDate,
+		endDate,
+		studentId,
+		taskState,
+		remark,
+		visibleLevel
+		)
+        values
+        (
+        #{taskName},
+        '2018-06-20',
+        '2018-06-25',
+        #{studentId},
+        0,
+        #{remark},
+        0
+        )
+	</insert>
+</mapper>

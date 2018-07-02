@@ -1,0 +1,690 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="Java" Description="Generates a very simple business object." ResponseEncoding="UTF-8"  %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="Context" Description="SourceTable that the object is based on." %>
+<%@ Property Name="package" Type="String" Category="Context" Default="com.bdqn.tcmp" Description="设置当前类的包名" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="<%=package%>.mapper.<%=GetModelClassName()%>Mapper">
+<cache/>
+	<resultMap type="<%=GetModelClassName()%>" id="<%=MakeCamel(GetModelClassName())%>List">
+		<id column="<%=SourceTable.PrimaryKey.MemberColumns[0].Name%>" property="<%=SourceTable.PrimaryKey.MemberColumns[0].Name%>" />
+		<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+		<result column="<%= SourceTable.NonPrimaryKeyColumns[i].Name %>" property="<%= SourceTable.NonPrimaryKeyColumns[i].Name %>" /><!--<%=SourceTable.NonPrimaryKeyColumns[i].Description %>-->
+		<%}%>
+	</resultMap>
+	<!--向<%= SourceTable.Description %>插入数据-->
+	<insert id="insert<%=GetModelClassName() %>" parameterType="<%= GetModelClassName() %>">
+		insert into <%=MakeCamel(GetModelClassName())%>
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		 	<%for(int i=0; i<SourceTable.NonPrimaryKeyColumns.Count; i++){
+			 ColumnSchema column = SourceTable.NonPrimaryKeyColumns[i];	
+			%>
+			<% if(column.NativeType=="int"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>,
+			</if>
+				<%}else if(column.NativeType=="smallint"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>,
+			</if>
+				<%}else if(column.NativeType=="double"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>,
+			</if>
+				<%}else{%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%>!=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>!=''">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>,
+			</if>
+				<%}%>
+            <%}%>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+		 	<%for(int i=0; i<SourceTable.NonPrimaryKeyColumns.Count; i++){
+			 ColumnSchema column = SourceTable.NonPrimaryKeyColumns[i];	
+			%>
+			<% if(column.NativeType=="int"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+				<%}else if(column.NativeType=="smallint"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+				<%}else if(column.NativeType=="double"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+				<%}else{%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%>!=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>!=''">
+				#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+				<%}%>
+            <%}%>
+		</trim>
+	</insert>
+	
+	<!--根据主键查询一个<%= SourceTable.Description %>数据-->
+	<select id="select<%=GetModelClassName() %>ByID" parameterType="int"  resultMap="<%=MakeCamel(GetModelClassName())%>List">
+		select <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %><%= SourceTable.Columns[i].Name %> <% if (i < SourceTable.Columns.Count - 1) { %>,<% } %><% } %> 
+		from <%=MakeCamel(GetModelClassName())%> where <%= SourceTable.PrimaryKey.MemberColumns[0].Name %>=#{id}
+	</select>
+	
+	<!--修改<%= SourceTable.Description %>数据-->
+	<update id="update<%=GetModelClassName() %>" parameterType="<%= GetModelClassName() %>">
+		update <%=MakeCamel(GetModelClassName())%>
+		<trim prefix="set" suffix="where <%= SourceTable.PrimaryKey.MemberColumns[0].Name %>=#{<%= SourceTable.PrimaryKey.MemberColumns[0].Name %>}" suffixOverrides=",">
+		<%for(int i=0; i<SourceTable.NonPrimaryKeyColumns.Count; i++){
+			ColumnSchema column = SourceTable.NonPrimaryKeyColumns[i];%>
+			<% if(column.NativeType=="int"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+				<%}else if(column.NativeType=="smallint"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+				<%}else if(column.NativeType=="double"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+				<%}else{%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%>!=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>!=''">
+				<%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>},
+			</if>
+			<%}%>
+		<%}%>
+		</trim>
+	</update>
+	
+	<!--修改<%= SourceTable.Description %>的启用状态-->
+	<update id="update<%=GetModelClassName() %>EnabledByID">
+		update  set isEnabled =#{value} where <%= SourceTable.PrimaryKey.MemberColumns[0].Name %>=#{id}
+	</update>
+	
+	<!--删除指定主键的<%= SourceTable.Description %>数据-->
+	<delete id="delete<%=GetModelClassName() %>" parameterType="int">
+		delete from <%=MakeCamel(GetModelClassName())%> where <%= SourceTable.PrimaryKey.MemberColumns[0].Name %>=#{id}
+	</delete>
+	
+	<!--查询全部<%= SourceTable.Description %>数据-->
+	<select id="select<%=GetModelClassName() %>All"  resultMap="<%=MakeCamel(GetModelClassName())%>List">
+		select <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %><%= SourceTable.Columns[i].Name %> <% if (i < SourceTable.Columns.Count - 1) { %>,<% } %><% } %> 
+		from <%=MakeCamel(GetModelClassName())%>
+	</select>
+	
+	<!--根据条件查询<%= SourceTable.Description %>数据-->
+	<select id="select<%=GetModelClassName() %>ByWhere"  parameterType="<%=GetModelClassName() %>DTO"  resultMap="<%=MakeCamel(GetModelClassName())%>List">
+		select <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %><%= SourceTable.Columns[i].Name %> <% if (i < SourceTable.Columns.Count - 1) { %>,<% } %><% } %> 
+		from <%=MakeCamel(GetModelClassName())%>
+		<trim prefix="where" prefixOverrides="and">
+		<%for(int i=0; i<SourceTable.NonPrimaryKeyColumns.Count; i++){
+			ColumnSchema column = SourceTable.NonPrimaryKeyColumns[i];%>
+			<% if(column.NativeType=="int"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else if(column.NativeType=="smallint"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else if(column.NativeType=="double"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else{%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%>!=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>!=''">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %> like CONCAT('%',#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>},'%')
+			</if>
+			<%}%>
+		<%}%>
+		</trim>
+	</select>
+	
+	<!--根据条件查询满足条件的<%= SourceTable.Description %>记录数-->
+	<select id="select<%=GetModelClassName() %>CountByWhere"  parameterType="<%=GetModelClassName() %>DTO" resultType="int">
+		select count(<%= SourceTable.PrimaryKey.MemberColumns[0].Name %>)
+		from <%=MakeCamel(GetModelClassName())%>
+		<trim prefix="where" prefixOverrides="and">
+		<%for(int i=0; i<SourceTable.NonPrimaryKeyColumns.Count; i++){
+			ColumnSchema column = SourceTable.NonPrimaryKeyColumns[i];%>
+			<% if(column.NativeType=="int"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else if(column.NativeType=="smallint"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else if(column.NativeType=="double"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else{%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%>!=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>!=''">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %> like CONCAT('%',#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>},'%')
+			</if>
+			<%}%>
+		<%}%>
+		</trim>
+	</select>
+	
+	<!--得到数据表<%= SourceTable.Description %>满足查询条件的分页记录-->
+	<select id="select<%=GetModelClassName() %>ByPage"  parameterType="<%=GetModelClassName() %>DTO" resultMap="<%=MakeCamel(GetModelClassName())%>List">
+		select <% for (int i = 0; i < SourceTable.Columns.Count; i++) { %><%= SourceTable.Columns[i].Name %> <% if (i < SourceTable.Columns.Count - 1) { %>,<% } %><% } %> 
+		from <%=MakeCamel(GetModelClassName())%>
+		<trim prefix="where" prefixOverrides="and">
+		<%for(int i=0; i<SourceTable.NonPrimaryKeyColumns.Count; i++){
+			ColumnSchema column = SourceTable.NonPrimaryKeyColumns[i];%>
+			<% if(column.NativeType=="int"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else if(column.NativeType=="smallint"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%= SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else if(column.NativeType=="double"){%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%> !=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>>0">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>=#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>}
+			</if>
+				<%}else{%>
+			<if test="<%= SourceTable.NonPrimaryKeyColumns[i].Name%>!=null and <%= SourceTable.NonPrimaryKeyColumns[i].Name %>!=''">
+				and <%= SourceTable.NonPrimaryKeyColumns[i].Name %> like CONCAT('%',#{<%=SourceTable.NonPrimaryKeyColumns[i].Name %>},'%')
+			</if>
+			<%}%>
+		<%}%>
+		</trim>
+		LIMIT #{fromTo},#{pageSize}
+	</select>
+</mapper>
+
+<script runat="template">
+///////////////////////////////////////////////////////////////
+// CLASS NAMES by Shen Bo
+///////////////////////////////////////////////////////////////
+// UserService
+// User
+public string GetModelClassName()
+{
+	return 	GetModelClassName(SourceTable);
+}
+// user
+public string GetModelMemberVarName()
+{
+	return GetModelParamName();
+}
+// user
+public string GetModelParamName()
+{
+	return MakeCamel(GetModelClassName());
+}
+// User
+public string GetModelClassName(TableSchema table)
+{
+	string result;
+	if ( table.ExtendedProperties.Contains("ModelName") )
+	{
+		result = (string)table.ExtendedProperties["ModelName"].Value;	
+		return MakePascal(result);
+	}
+
+		result = table.Name;
+
+	return MakePascal(result);
+}
+
+public string GetCSharpVariableType(ColumnSchema column,string str)
+{
+	if (column.Name.EndsWith("TypeCode")) return str;
+	
+	switch (column.DataType)
+	{
+		case DbType.AnsiString: return str + ".ToString()";
+		case DbType.AnsiStringFixedLength: return str + ".ToString()";
+		case DbType.Binary: return "((" + str + ")==DBNull.Value)?Convert.ToByte(0):Convert.ToByte(" + str + ")";
+		case DbType.Boolean: return "(bool)" + str;
+		case DbType.Byte: return "((" + str + ")==DBNull.Value)? null :System.Text.Encoding.Default.GetBytes(" + str + ")";
+		case DbType.Currency: return "((" + str + ")==DBNull.Value)?0:Convert.ToDecimal(" + str + ")";
+		case DbType.Date: return "((" + str + ")==DBNull.Value)?"+DateTime.Now+":Convert.ToDateTime(" + str + ")";
+		case DbType.DateTime: return "((" + str + ")==DBNull.Value)?DateTime.MinValue:Convert.ToDateTime(" + str + ")";
+		case DbType.Decimal: return "((" + str + ")==DBNull.Value)?0:Convert.ToDecimal(" + str + ")";
+		case DbType.Double: return "((" + str + ")==DBNull.Value)?0:Convert.ToDouble(" + str + ")";
+		case DbType.Guid: return "(Guid)"+ str;
+		case DbType.Int16: return "(short)" + str;
+		case DbType.Int32: return "((" + str + ")==DBNull.Value)?0:Convert.ToInt32(" + str + ")";
+		case DbType.Int64: return "(long)" + str;
+		case DbType.Object: return "(object)" + str;
+		case DbType.SByte: return "Convert.ToSByte(" + str + ")";
+		case DbType.Single: return "(float)" + str;
+		case DbType.String: return str + ".ToString()";
+		case DbType.StringFixedLength: return str + ".ToString()";
+		case DbType.Time: return "(DateTime)" + str;
+		case DbType.UInt16: return "(ushort)" + str;
+		case DbType.UInt32: return "(uint)" + str;
+		case DbType.UInt64: return "(ulong)" + str;
+		case DbType.VarNumeric: return "Convert.ToDecimal(" + str + ")";
+		default:
+		{
+			return "__UNKNOWN__" + str;
+		}
+	}
+}
+///////////////////////////////////////////////////////////////
+// INSERT SQL LINES by Shen Bo
+///////////////////////////////////////////////////////////////
+// "INSERT users (loginid, loginpwd, username, address, phone, mail, roleId, userstateid)" +
+public string GetInsertSQLLine1()
+{
+	string result;
+	result = "\"INSERT " + SourceTable.Name + " (";
+	foreach(ColumnSchema column in SourceTable.NonPrimaryKeyColumns)
+	{
+		result += column.Name + ", ";
+	}
+	result = result.Substring(0, result.Length-2);
+	result += ")\" +";
+
+	return result;
+}
+// "VALUES (@LoginId,@LoginPwd,@UserName,@Address,@Phone,@Mail,@RoleId,@UserStateId)";
+public string GetInsertSQLLine2()
+{
+	string result;
+	result = "\"VALUES (";
+	foreach(ColumnSchema column in SourceTable.NonPrimaryKeyColumns)
+	{
+		result += "@" + column.Name + ", ";
+	}
+	result = result.Substring(0, result.Length-2);
+	result += ")\";";
+	return result;
+}
+
+
+///////////////////////////////////////////////////////////////
+// PRIMARY KEY TYPE by Shen Bo
+///////////////////////////////////////////////////////////////
+// int
+public string GetPKPropertyType()
+{
+	return 	GetPKType(SourceTable);
+}
+// int
+public string GetPKType()
+{
+	return 	GetPKType(SourceTable);
+}
+// int
+public string GetPKType(TableSchema SourceTable)
+{
+	if (SourceTable.PrimaryKey != null)
+	{
+		if (SourceTable.PrimaryKey.MemberColumns.Count == 1)
+		{
+			return GetCSharpTypeFromDBFieldType(SourceTable.PrimaryKey.MemberColumns[0]);
+		}
+		else
+		{
+			throw new ApplicationException("This template will not work on primary keys with more than one member column.");
+		}
+	}
+	else
+	{
+		throw new ApplicationException("This template will only work on MyTables with a primary key.");
+	}
+}
+
+
+///////////////////////////////////////////////////////////////
+// PRIMARY KEY NAME by Shen Bo
+///////////////////////////////////////////////////////////////
+// Id
+public string GetPKPropertyName()
+{
+	return MakePascal(GetPKName());
+}
+// id
+public string GetPKParamName()
+{
+	return GetPKMemberVarName();	
+}
+// id
+public string GetPKMemberVarName()
+{
+	return MakeCamel(GetPKName());	
+}
+// Id
+public string GetPKName()
+{
+	return GetPKName(SourceTable);
+}
+// Id
+public string GetPKName(TableSchema SourceTable)
+{
+	if (SourceTable.PrimaryKey != null)
+	{
+		if (SourceTable.PrimaryKey.MemberColumns.Count == 1)
+		{
+			return SourceTable.PrimaryKey.MemberColumns[0].Name;
+		}
+		else
+		{
+			throw new ApplicationException("This template will not work on primary keys with more than one member column.");
+		}
+	}
+	else
+	{
+		throw new ApplicationException("This template will only work on tables with a primary key.");
+	}
+}
+
+
+///////////////////////////////////////////////////////////////
+// FOREIGH KEY PROPERTY TYPE by Shen Bo
+///////////////////////////////////////////////////////////////
+// UserState
+public string GetFKPropertyType(TableKeySchema key)
+{
+	return MakePascal(GetFKPrimaryModelClassName(key));
+}
+
+///////////////////////////////////////////////////////////////
+// FOREIGH KEY PROPERTY NAME by Shen Bo
+///////////////////////////////////////////////////////////////
+// userState
+public string GetFKMemberVarName(TableKeySchema key)
+{
+	string result = GetFKForeignIdName(key);
+	if( result.ToLower().EndsWith("id") )
+	{
+		result = result.Substring(0, result.Length - 2);	
+	}
+	return MakeCamel(result);
+}
+// UserState
+public string GetFKPropertyName(TableKeySchema key)
+{
+	return MakePascal(GetFKMemberVarName(key));
+}
+// UserState
+public string GetFKPrimaryModelClassName(TableKeySchema key)
+{
+	return GetModelClassName(key.PrimaryKeyTable);
+}
+
+///////////////////////////////////////////////////////////////
+// FOREIGH KEY ID NAMEs by Shen Bo
+///////////////////////////////////////////////////////////////
+//In User table => UserStateId
+public string GetFKForeignIdName(TableKeySchema key)	
+{
+	return key.ForeignKeyMemberColumns[0].Name;
+}
+//In UserState table => Id
+public string GetFKPrimaryIdName(TableKeySchema key)
+{
+	return key.PrimaryKeyMemberColumns[0].Name;
+}
+
+
+///////////////////////////////////////////////////////////////
+// PROPERTY TYPE by Shen Bo
+///////////////////////////////////////////////////////////////
+public string GetPropertyType(ColumnSchema column)
+{
+	return GetCSharpTypeFromDBFieldType(column);
+}
+public string GetMemberVarType(ColumnSchema column)
+{
+	return GetCSharpTypeFromDBFieldType(column);
+}
+public string GetParamType(ColumnSchema column)
+{
+	return GetCSharpTypeFromDBFieldType(column);
+}
+public string GetCSharpTypeFromDBFieldType(ColumnSchema column)
+{
+	if (column.Name.EndsWith("TypeCode")) return column.Name;
+	
+	switch (column.DataType)
+	{
+		case DbType.AnsiString: return "String";
+		case DbType.AnsiStringFixedLength: return "String";
+		case DbType.Binary: return "byte[]";
+		case DbType.Boolean: return "bool";
+		case DbType.Byte: return "Int";
+		case DbType.Currency: return "Double";
+		case DbType.Date: return "Date";
+		case DbType.DateTime: return "Date";
+		case DbType.Decimal: return "Double";
+		case DbType.Double: return "Double";
+		case DbType.Guid: return "Guid";
+		case DbType.Int16: return "Short";
+		case DbType.Int32: return "Int";
+		case DbType.Int64: return "Long";
+		case DbType.Object: return "Object";
+		case DbType.SByte: return "sbyte";
+		case DbType.Single: return "Float";
+		case DbType.String: return "String";
+		case DbType.StringFixedLength: return "String";
+		case DbType.Time: return "TimeSpan";
+		case DbType.UInt16: return "ushort";
+		case DbType.UInt32: return "uint";
+		case DbType.UInt64: return "ulong";
+		case DbType.VarNumeric: return "Double";
+		default:
+		{
+			return "__UNKNOWN__" + column.NativeType;
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////
+// PROPERTY NAME by Shen Bo
+///////////////////////////////////////////////////////////////
+
+public string GetMemberVariableDefaultValue(ColumnSchema column)
+{
+	switch (column.DataType)
+	{
+		case DbType.Guid:
+		{
+			return "Guid.Empty";
+		}
+		case DbType.AnsiString:
+		case DbType.AnsiStringFixedLength:
+		case DbType.String:
+		case DbType.StringFixedLength:
+		{
+			return "String.Empty";
+		}
+		default:
+		{
+			return "";
+		}
+	}
+}
+
+
+public string GetReaderMethod(ColumnSchema column)
+{
+	switch (column.DataType)
+	{
+		case DbType.Byte:
+		{
+			return "GetByte";
+		}
+		case DbType.Int16:
+		{
+			return "GetInt16";
+		}
+		case DbType.Int32:
+		{
+			return "GetInt32";
+		}
+		case DbType.Int64:
+		{
+			return "GetInt64";
+		}
+		case DbType.AnsiStringFixedLength:
+		case DbType.AnsiString:
+		case DbType.String:
+		case DbType.StringFixedLength:
+		{
+			return "GetString";
+		}
+		case DbType.Boolean:
+		{
+			return "GetBoolean";
+		}
+		case DbType.Guid:
+		{
+			return "GetGuid";
+		}
+		case DbType.Currency:
+		case DbType.Decimal:
+		{
+			return "GetDecimal";
+		}
+		case DbType.DateTime:
+		case DbType.Date:
+		{
+			return "GetDateTime";
+		}
+		case DbType.Binary:
+		{
+			return "GetBytes";
+		}
+		default:
+		{
+			return "__SQL__" + column.DataType;
+		}
+	}
+}
+
+public string GetSqlDbType(ColumnSchema column)
+{
+	switch (column.NativeType)
+	{
+		case "bigint": return "BigInt";
+		case "binary": return "Binary";
+		case "bit": return "Bit";
+		case "char": return "Char";
+		case "datetime": return "DateTime";
+		case "decimal": return "Decimal";
+		case "float": return "Float";
+		case "image": return "Image";
+		case "int": return "Int";
+		case "money": return "Money";
+		case "nchar": return "NChar";
+		case "ntext": return "NText";
+		case "numeric": return "Decimal";
+		case "nvarchar": return "NVarChar";
+		case "real": return "Real";
+		case "smalldatetime": return "SmallDateTime";
+		case "smallint": return "SmallInt";
+		case "smallmoney": return "SmallMoney";
+		case "sql_variant": return "Variant";
+		case "sysname": return "NChar";
+		case "text": return "Text";
+		case "timestamp": return "Timestamp";
+		case "tinyint": return "TinyInt";
+		case "uniqueidentifier": return "UniqueIdentifier";
+		case "varbinary": return "VarBinary";
+		case "varchar": return "VarChar";
+		default: return "__UNKNOWN__" + column.NativeType;
+	}
+}
+
+//So dirty function! -- reviewed by storm_xu
+public string MakeCamel(string value)
+{
+	return value.Substring(0, 1).ToLower() + value.Substring(1);
+}
+
+//I will be dirty too! -- coded by storm_xu
+public string MakePascal(string value)
+{
+	//value=	value.Replace("_","");stock_in_id
+	if(value.IndexOf("_")>-1)
+	{
+		string lower=value.Substring(value.IndexOf("_"),2);
+		string result= value.Substring(0, 1).ToUpper() + value.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+		if(result.IndexOf("_")>-1)
+		{
+			lower=result.Substring(result.IndexOf("_"),2);
+			result= result.Substring(0, 1).ToUpper() + result.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+			if(result.IndexOf("_")>-1)
+			{
+				lower=result.Substring(result.IndexOf("_"),2);
+				result= result.Substring(0, 1).ToUpper() + result.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+				if(result.IndexOf("_")>-1)
+				{
+					lower=result.Substring(result.IndexOf("_"),2);
+					result= result.Substring(0, 1).ToUpper() + result.Substring(1).Replace(lower,lower.ToUpper().Substring(1, 1));
+				}
+			}
+		}
+		return result;
+	}else
+	{
+		return value.Substring(0, 1).ToUpper() + value.Substring(1);
+	}
+}
+
+public string MakePlural(string name)
+{
+	Regex plural1 = new Regex("(?<keep>[^aeiou])y$");
+	Regex plural2 = new Regex("(?<keep>[aeiou]y)$");
+	Regex plural3 = new Regex("(?<keep>[sxzh])$");
+	Regex plural4 = new Regex("(?<keep>[^sxzhy])$");
+
+	if(plural1.IsMatch(name))
+		return plural1.Replace(name, "${keep}ies");
+	else if(plural2.IsMatch(name))
+		return plural2.Replace(name, "${keep}s");
+	else if(plural3.IsMatch(name))
+		return plural3.Replace(name, "${keep}es");
+	else if(plural4.IsMatch(name))
+		return plural4.Replace(name, "${keep}s");
+
+	return name;
+}
+
+public string MakeSingle(string name)
+{
+	Regex plural1 = new Regex("(?<keep>[^aeiou])ies$");
+	Regex plural2 = new Regex("(?<keep>[aeiou]y)s$");
+	Regex plural3 = new Regex("(?<keep>[sxzh])es$");
+	Regex plural4 = new Regex("(?<keep>[^sxzhyu])s$");
+
+	if(plural1.IsMatch(name))
+		return plural1.Replace(name, "${keep}y");
+	else if(plural2.IsMatch(name))
+		return plural2.Replace(name, "${keep}");
+	else if(plural3.IsMatch(name))
+		return plural3.Replace(name, "${keep}");
+	else if(plural4.IsMatch(name))
+		return plural4.Replace(name, "${keep}");
+
+	return name;
+}
+
+public void PrintHeader()
+{
+	Response.WriteLine("//============================================================");
+	Response.WriteLine("// Producnt name:		storm.CodeMad");
+	Response.WriteLine("// Version: 			1.0");
+	Response.WriteLine("// Coded by:			storm_xu (storm_xujian@yahoo.com.cn)");
+	Response.WriteLine("// Auto generated at: 	{0}", DateTime.Now);
+	Response.WriteLine("//============================================================");
+	Response.WriteLine();
+}
+
+</script>

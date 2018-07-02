@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.AuthorityMapper">
+    <cache></cache>
+    <resultMap type="Authority" id="authorityList">
+        <id column="authorityId" property="authorityId" />
+        <result column="authorityType" property="authorityType" /><!--权限类型-->
+        <result column="authorityName" property="authorityName" /><!--权限名称-->
+        <result column="authorityPath" property="authorityPath" /><!--权限路径-->
+        <result column="authorityDesc" property="authorityDesc" /><!--权限描述-->
+        <result column="parentId" property="parentId" /><!--上一级ID-->
+        <result column="isEnable" property="isEnable" /><!--是否启用-->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertAuthority" parameterType="Authority">
+        insert into authority
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="authorityType!=null and authorityType!=''">
+                authorityType,
+            </if>
+            <if test="authorityName!=null and authorityName!=''">
+                authorityName,
+            </if>
+            <if test="authorityPath!=null and authorityPath!=''">
+                authorityPath,
+            </if>
+            <if test="authorityDesc!=null and authorityDesc!=''">
+                authorityDesc,
+            </if>
+            <if test="parentId !=null and parentId>0">
+                parentId,
+            </if>
+            <if test="isEnable !=null and isEnable>0">
+                isEnable,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="authorityType!=null and authorityType!=''">
+                #{authorityType},
+            </if>
+            <if test="authorityName!=null and authorityName!=''">
+                #{authorityName},
+            </if>
+            <if test="authorityPath!=null and authorityPath!=''">
+                #{authorityPath},
+            </if>
+            <if test="authorityDesc!=null and authorityDesc!=''">
+                #{authorityDesc},
+            </if>
+            <if test="parentId !=null and parentId>0">
+                #{parentId},
+            </if>
+            <if test="isEnable !=null and isEnable>0">
+                #{isEnable},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectAuthorityByID" parameterType="int"  resultMap="authorityList">
+        select authorityId ,authorityType ,authorityName ,authorityPath ,authorityDesc ,parentId ,isEnable
+        from authority where authorityId=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateAuthority" parameterType="Authority">
+        update authority
+        <trim prefix="set" suffix="where authorityId=#{authorityId}" suffixOverrides=",">
+            <if test="authorityType!=null and authorityType!=''">
+                authorityType=#{authorityType},
+            </if>
+            <if test="authorityName!=null and authorityName!=''">
+                authorityName=#{authorityName},
+            </if>
+            <if test="authorityPath!=null and authorityPath!=''">
+                authorityPath=#{authorityPath},
+            </if>
+            <if test="authorityDesc!=null and authorityDesc!=''">
+                authorityDesc=#{authorityDesc},
+            </if>
+            <if test="parentId !=null and parentId>0">
+                parentId=#{parentId},
+            </if>
+            <if test="isEnable !=null and isEnable>0">
+                isEnable=#{isEnable},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateAuthorityEnabledByID">
+        update  set isEnabled =#{value} where authorityId=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteAuthority" parameterType="int">
+        delete from authority where authorityId=#{id}
+    </delete>
+    <!--查询全部数据-->
+    <select id="selectAuthorityAll"  resultMap="authorityList" parameterType="integer">
+        select * from authority
+        <where>
+            <if test="parentId > 0">
+                and parentId = #{parentId} or authorityId = #{parentId} or
+                authorityId in (select authorityId from authority where parentId in
+                (select authorityId from authority
+                where parentId = #{parentId}))
+            </if>
+        </where>
+
+    </select>
+
+    <select id="selectAuthorityCatalog" resultMap="authorityList">
+        select * from authority where parentId = 0
+    </select>
+    <!--&lt;!&ndash;根据条件查询数据&ndash;&gt;-->
+    <!--<select id="selectAuthorityByWhere"  parameterType="AuthorityDTO"  resultMap="authorityList">-->
+        <!--select authorityId ,authorityType ,authorityName ,authorityPath ,authorityDesc ,parentId ,isEnable-->
+        <!--from authority-->
+        <!--<trim prefix="where" prefixOverrides="and">-->
+            <!--<if test="authorityType!=null and authorityType!=''">-->
+                <!--and authorityType like CONCAT('%',#{authorityType},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityName!=null and authorityName!=''">-->
+                <!--and authorityName like CONCAT('%',#{authorityName},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityPath!=null and authorityPath!=''">-->
+                <!--and authorityPath like CONCAT('%',#{authorityPath},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityDesc!=null and authorityDesc!=''">-->
+                <!--and authorityDesc like CONCAT('%',#{authorityDesc},'%')-->
+            <!--</if>-->
+            <!--<if test="parentId !=null and parentId>0">-->
+                <!--and parentId=#{parentId}-->
+            <!--</if>-->
+            <!--<if test="isEnable !=null and isEnable>0">-->
+                <!--and isEnable=#{isEnable}-->
+            <!--</if>-->
+        <!--</trim>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash;根据条件查询满足条件的记录数&ndash;&gt;-->
+    <!--<select id="selectAuthorityCountByWhere"  parameterType="AuthorityDTO" resultType="int">-->
+        <!--select count(authorityId)-->
+        <!--from authority-->
+        <!--<trim prefix="where" prefixOverrides="and">-->
+            <!--<if test="authorityType!=null and authorityType!=''">-->
+                <!--and authorityType like CONCAT('%',#{authorityType},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityName!=null and authorityName!=''">-->
+                <!--and authorityName like CONCAT('%',#{authorityName},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityPath!=null and authorityPath!=''">-->
+                <!--and authorityPath like CONCAT('%',#{authorityPath},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityDesc!=null and authorityDesc!=''">-->
+                <!--and authorityDesc like CONCAT('%',#{authorityDesc},'%')-->
+            <!--</if>-->
+            <!--<if test="parentId !=null and parentId>0">-->
+                <!--and parentId=#{parentId}-->
+            <!--</if>-->
+            <!--<if test="isEnable !=null and isEnable>0">-->
+                <!--and isEnable=#{isEnable}-->
+            <!--</if>-->
+        <!--</trim>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash;得到数据表满足查询条件的分页记录&ndash;&gt;-->
+    <!--<select id="selectAuthorityByPage"  parameterType="AuthorityDTO" resultMap="authorityList">-->
+        <!--select authorityId ,authorityType ,authorityName ,authorityPath ,authorityDesc ,parentId ,isEnable-->
+        <!--from authority-->
+        <!--<trim prefix="where" prefixOverrides="and">-->
+            <!--<if test="authorityType!=null and authorityType!=''">-->
+                <!--and authorityType like CONCAT('%',#{authorityType},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityName!=null and authorityName!=''">-->
+                <!--and authorityName like CONCAT('%',#{authorityName},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityPath!=null and authorityPath!=''">-->
+                <!--and authorityPath like CONCAT('%',#{authorityPath},'%')-->
+            <!--</if>-->
+            <!--<if test="authorityDesc!=null and authorityDesc!=''">-->
+                <!--and authorityDesc like CONCAT('%',#{authorityDesc},'%')-->
+            <!--</if>-->
+            <!--<if test="parentId !=null and parentId>0">-->
+                <!--and parentId=#{parentId}-->
+            <!--</if>-->
+            <!--<if test="isEnable !=null and isEnable>0">-->
+                <!--and isEnable=#{isEnable}-->
+            <!--</if>-->
+        <!--</trim>-->
+        <!--LIMIT #{fromTo},#{pageSize}-->
+    <!--</select>-->
+</mapper>
+

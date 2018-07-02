@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.ActivitiesMapper">
+    <cache></cache>
+    <resultMap type="Activities" id="activitiesList">
+        <id column="activitiesID" property="activitiesID"/>
+        <result column="activitiesName" property="activitiesName"/><!---->
+        <result column="beginDate" property="beginDate"/><!---->
+        <result column="endDate" property="endDate"/><!---->
+        <result column="applyBeginDate" property="applyBeginDate"/><!---->
+        <result column="applyEndDate" property="applyEndDate"/><!---->
+        <result column="teacherID" property="teacherID"/><!---->
+        <result column="teacherName" property="teacherName"/><!---->
+        <result column="peopleCount" property="peopleCount"/><!---->
+        <result column="visibleLevel" property="visibleLevel"/><!---->
+        <result column="signUpCount" property="signUpCount"/><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertActivities" parameterType="Activities">
+        insert into activities
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activitiesName!=null and activitiesName!=''">
+                activitiesName,
+            </if>
+            <if test="beginDate!=null and beginDate!=''">
+                beginDate,
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                endDate,
+            </if>
+            <if test="applyBeginDate!=null and applyBeginDate!=''">
+                applyBeginDate,
+            </if>
+            <if test="applyEndDate!=null and applyEndDate!=''">
+                applyEndDate,
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                teacherID,
+            </if>
+            <if test="peopleCount!=null and peopleCount!=''">
+                peopleCount,
+            </if>
+            <if test="state !=null and state>0">
+                state,
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                visibleLevel,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="activitiesName!=null and activitiesName!=''">
+                #{activitiesName},
+            </if>
+            <if test="beginDate!=null and beginDate!=''">
+                #{beginDate},
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                #{endDate},
+            </if>
+            <if test="applyBeginDate!=null and applyBeginDate!=''">
+                #{applyBeginDate},
+            </if>
+            <if test="applyEndDate!=null and applyEndDate!=''">
+                #{applyEndDate},
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                #{teacherID},
+            </if>
+            <if test="peopleCount!=null and peopleCount!=''">
+                #{peopleCount},
+            </if>
+            <if test="state !=null and state>0">
+                #{state},
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                #{visibleLevel},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectActivitiesByID" parameterType="int" resultMap="activitiesList">
+        select activitiesID ,activitiesName ,beginDate ,endDate ,applyBeginDate ,applyEndDate ,teacherID ,peopleCount ,state ,visibleLevel
+        from activities where activitiesID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateActivities" parameterType="Activities">
+        update activities
+        <trim prefix="set" suffix="where activitiesID=#{activitiesID}" suffixOverrides=",">
+            <if test="activitiesName!=null and activitiesName!=''">
+                activitiesName=#{activitiesName},
+            </if>
+            <if test="beginDate!=null and beginDate!=''">
+                beginDate=#{beginDate},
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                endDate=#{endDate},
+            </if>
+            <if test="applyBeginDate!=null and applyBeginDate!=''">
+                applyBeginDate=#{applyBeginDate},
+            </if>
+            <if test="applyEndDate!=null and applyEndDate!=''">
+                applyEndDate=#{applyEndDate},
+            </if>
+            <if test="teacherID !=null and teacherID>0">
+                teacherID=#{teacherID},
+            </if>
+            <if test="peopleCount!=null and peopleCount!=''">
+                peopleCount=#{peopleCount},
+            </if>
+            <if test="state !=null and state>0">
+                state=#{state},
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                visibleLevel=#{visibleLevel},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateActivitiesEnabledByID">
+        update  set isEnabled =#{value} where activitiesID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteActivities" parameterType="int">
+        delete from activities where activitiesID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectActivitiesAll" resultMap="activitiesList">
+        SELECT
+        a.activitiesID,a.activitiesName,a.beginDate,a.endDate,a.applyBeginDate,a.applyEndDate,t.teacherName,a.peopleCount,a.visibleLevel,count(ad.activitiesID)
+        as signUpCount FROM activities AS a
+        LEFT JOIN activitiesdetail AS ad ON a.activitiesID = ad.activitiesID
+        INNER JOIN teacher AS t ON t.teacherId = a.teacherID
+        GROUP BY a.activitiesID
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectActivitiesByWhere" parameterType="ActivitiesDTO" resultMap="activitiesList">
+        SELECT
+        a.activitiesID,a.activitiesName,a.beginDate,a.endDate,a.applyBeginDate,a.applyEndDate,t.teacherName,a.peopleCount,a.visibleLevel,count(ad.activitiesID)
+        as signUpCount FROM activities AS a
+        LEFT JOIN activitiesdetail AS ad ON a.activitiesID = ad.activitiesID
+        INNER JOIN teacher AS t ON t.teacherId = a.teacherID
+        GROUP BY a.activitiesID
+        <trim prefix="where" prefixOverrides="and">
+            <if test="activitiesName!=null and activitiesName!=''">
+                and activitiesName like CONCAT('%',#{activitiesName},'%')
+            </if>
+
+            <if test="teacherName !=null and teacherName!=''">
+                and teacherName like CONCAT('%',#{teacherName},'%')
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                and visibleLevel like CONCAT('%',#{visibleLevel},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectActivitiesCountByWhere" parameterType="ActivitiesDTO" resultType="int">
+        SELECT count(1) as recordCount from(SELECT a.activitiesID FROM activities AS a
+        LEFT JOIN activitiesdetail AS ad ON a.activitiesID = ad.activitiesID
+        INNER JOIN teacher AS t ON t.teacherId = a.teacherID
+        <trim prefix="where" prefixOverrides="and">
+            <if test="activitiesName!=null and activitiesName!=''">
+                and activitiesName like CONCAT('%',#{activitiesName},'%')
+            </if>
+
+            <if test="teacherName !=null and teacherName!=''">
+                and teacherName like CONCAT('%',#{teacherName},'%')
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                and visibleLevel like CONCAT('%',#{visibleLevel},'%')
+            </if>
+        </trim>
+        GROUP BY
+        a.activitiesID)temp
+
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectActivitiesByPage" parameterType="ActivitiesDTO" resultMap="activitiesList">
+        SELECT
+        a.activitiesID,a.activitiesName,a.beginDate,a.endDate,a.applyBeginDate,a.applyEndDate,t.teacherName,a.peopleCount,a.visibleLevel,count(ad.activitiesID)
+        as signUpCount FROM activities AS a
+        LEFT JOIN activitiesdetail AS ad ON a.activitiesID = ad.activitiesID
+        INNER JOIN teacher AS t ON t.teacherId = a.teacherID
+        <trim prefix="where" prefixOverrides="and">
+            <if test="activitiesName!=null and activitiesName!=''">
+                and activitiesName like CONCAT('%',#{activitiesName},'%')
+            </if>
+
+            <if test="teacherName !=null and teacherName!=''">
+                and teacherName like CONCAT('%',#{teacherName},'%')
+            </if>
+            <if test="visibleLevel!=null and visibleLevel!=''">
+                and visibleLevel like CONCAT('%',#{visibleLevel},'%')
+            </if>
+        </trim>
+        GROUP BY a.activitiesID
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+</mapper>
+

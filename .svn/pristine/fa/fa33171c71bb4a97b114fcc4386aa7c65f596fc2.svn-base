@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.WorkplanMapper">
+	<cache></cache>
+	<resultMap type="Workplan" id="workplanList">
+		<id column="planid" property="planid" />
+		<result column="ClassName" property="ClassName" /><!---->
+		<result column="classid" property="classid" /><!---->
+		<result column="zhouyi" property="zhouyi" /><!---->
+		<result column="zhouer" property="zhouer" /><!---->
+		<result column="zhousan" property="zhousan" /><!---->
+		<result column="zhousi" property="zhousi" /><!---->
+		<result column="zhouwu" property="zhouwu" /><!---->
+		<result column="zhouliu" property="zhouliu" /><!---->
+		<result column="zhouri" property="zhouri" /><!---->
+	</resultMap>
+	<!--向插入数据-->
+	<insert id="insertWorkplan" parameterType="Workplan">
+		insert into workplan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ClassName!=null and ClassName!=''">
+				ClassName,
+			</if>
+			<if test="classid !=null and classid>0">
+				classid,
+			</if>
+			<if test="zhouyi !=null and zhouyi>0">
+				zhouyi,
+			</if>
+			<if test="zhouer !=null and zhouer>0">
+				zhouer,
+			</if>
+			<if test="zhousan !=null and zhousan>0">
+				zhousan,
+			</if>
+			<if test="zhousi !=null and zhousi>0">
+				zhousi,
+			</if>
+			<if test="zhouwu !=null and zhouwu>0">
+				zhouwu,
+			</if>
+			<if test="zhouliu !=null and zhouliu>0">
+				zhouliu,
+			</if>
+			<if test="zhouri !=null and zhouri>0">
+				zhouri,
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="ClassName!=null and ClassName!=''">
+				#{ClassName},
+			</if>
+			<if test="classid !=null and classid>0">
+				#{classid},
+			</if>
+			<if test="zhouyi !=null and zhouyi>0">
+				#{zhouyi},
+			</if>
+			<if test="zhouer !=null and zhouer>0">
+				#{zhouer},
+			</if>
+			<if test="zhousan !=null and zhousan>0">
+				#{zhousan},
+			</if>
+			<if test="zhousi !=null and zhousi>0">
+				#{zhousi},
+			</if>
+			<if test="zhouwu !=null and zhouwu>0">
+				#{zhouwu},
+			</if>
+			<if test="zhouliu !=null and zhouliu>0">
+				#{zhouliu},
+			</if>
+			<if test="zhouri !=null and zhouri>0">
+				#{zhouri},
+			</if>
+		</trim>
+	</insert>
+
+	<!--根据主键查询一个数据-->
+	<select id="selectWorkplanByID" parameterType="int"  resultMap="workplanList">
+		select planid ,ClassName ,classid ,zhouyi ,zhouer ,zhousan ,zhousi ,zhouwu ,zhouliu ,zhouri
+		from workplan where planid=#{id}
+	</select>
+
+	<!--修改数据-->
+	<update id="updateWorkplan" parameterType="Workplan">
+		update workplan
+		<trim prefix="set" suffix="where planid=#{planid}" suffixOverrides=",">
+		<if test="ClassName!=null and ClassName!=''">
+			ClassName=#{ClassName},
+		</if>
+		<if test="classid !=null and classid>0">
+			classid=#{classid},
+		</if>
+		<if test="zhouyi !=null and zhouyi>0">
+			zhouyi=#{zhouyi},
+		</if>
+		<if test="zhouer !=null and zhouer>0">
+			zhouer=#{zhouer},
+		</if>
+		<if test="zhousan !=null and zhousan>0">
+			zhousan=#{zhousan},
+		</if>
+		<if test="zhousi !=null and zhousi>0">
+			zhousi=#{zhousi},
+		</if>
+		<if test="zhouwu !=null and zhouwu>0">
+			zhouwu=#{zhouwu},
+		</if>
+		<if test="zhouliu !=null and zhouliu>0">
+			zhouliu=#{zhouliu},
+		</if>
+		<if test="zhouri !=null and zhouri>0">
+			zhouri=#{zhouri},
+		</if>
+		</trim>
+	</update>
+
+	<!--修改的启用状态-->
+	<update id="updateWorkplanEnabledByID">
+		update  set isEnabled =#{value} where planid=#{id}
+	</update>
+
+	<!--删除指定主键的数据-->
+	<delete id="deleteWorkplan" parameterType="int">
+		delete from workplan where planid=#{id}
+	</delete>
+
+	<!--查询全部数据-->
+	<select id="selectWorkplanAll"  resultMap="workplanList">
+		select planid ,ClassName ,classid ,zhouyi ,zhouer ,zhousan ,zhousi ,zhouwu ,zhouliu ,zhouri
+		from workplan
+	</select>
+
+	<!--根据条件查询数据-->
+	<select id="selectWorkplanByWhere"  parameterType="WorkplanDTO"  resultMap="workplanList">
+		select planid ,ClassName ,classid ,zhouyi ,zhouer ,zhousan ,zhousi ,zhouwu ,zhouliu ,zhouri
+		from workplan
+		<trim prefix="where" prefixOverrides="and">
+			<if test="ClassName!=null and ClassName!=''">
+				and ClassName like CONCAT('%',#{ClassName},'%')
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+			<if test="zhouyi !=null and zhouyi>0">
+				and zhouyi=#{zhouyi}
+			</if>
+			<if test="zhouer !=null and zhouer>0">
+				and zhouer=#{zhouer}
+			</if>
+			<if test="zhousan !=null and zhousan>0">
+				and zhousan=#{zhousan}
+			</if>
+			<if test="zhousi !=null and zhousi>0">
+				and zhousi=#{zhousi}
+			</if>
+			<if test="zhouwu !=null and zhouwu>0">
+				and zhouwu=#{zhouwu}
+			</if>
+			<if test="zhouliu !=null and zhouliu>0">
+				and zhouliu=#{zhouliu}
+			</if>
+			<if test="zhouri !=null and zhouri>0">
+				and zhouri=#{zhouri}
+			</if>
+		</trim>
+	</select>
+
+	<!--根据条件查询满足条件的记录数-->
+	<select id="selectWorkplanCountByWhere"  parameterType="WorkplanDTO" resultType="int">
+		select count(planid)
+		from workplan
+		<trim prefix="where" prefixOverrides="and">
+			<if test="ClassName!=null and ClassName!=''">
+				and ClassName like CONCAT('%',#{ClassName},'%')
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+			<if test="zhouyi !=null and zhouyi>0">
+				and zhouyi=#{zhouyi}
+			</if>
+			<if test="zhouer !=null and zhouer>0">
+				and zhouer=#{zhouer}
+			</if>
+			<if test="zhousan !=null and zhousan>0">
+				and zhousan=#{zhousan}
+			</if>
+			<if test="zhousi !=null and zhousi>0">
+				and zhousi=#{zhousi}
+			</if>
+			<if test="zhouwu !=null and zhouwu>0">
+				and zhouwu=#{zhouwu}
+			</if>
+			<if test="zhouliu !=null and zhouliu>0">
+				and zhouliu=#{zhouliu}
+			</if>
+			<if test="zhouri !=null and zhouri>0">
+				and zhouri=#{zhouri}
+			</if>
+		</trim>
+	</select>
+
+	<!--得到数据表满足查询条件的分页记录-->
+	<select id="selectWorkplanByPage"  parameterType="WorkplanDTO" resultMap="workplanList">
+		select planid ,ClassName ,classid ,zhouyi ,zhouer ,zhousan ,zhousi ,zhouwu ,zhouliu ,zhouri
+		from workplan
+		<trim prefix="where" prefixOverrides="and">
+			<if test="ClassName!=null and ClassName!=''">
+				and ClassName like CONCAT('%',#{ClassName},'%')
+			</if>
+			<if test="classid !=null and classid>0">
+				and classid=#{classid}
+			</if>
+			<if test="zhouyi !=null and zhouyi>0">
+				and zhouyi=#{zhouyi}
+			</if>
+			<if test="zhouer !=null and zhouer>0">
+				and zhouer=#{zhouer}
+			</if>
+			<if test="zhousan !=null and zhousan>0">
+				and zhousan=#{zhousan}
+			</if>
+			<if test="zhousi !=null and zhousi>0">
+				and zhousi=#{zhousi}
+			</if>
+			<if test="zhouwu !=null and zhouwu>0">
+				and zhouwu=#{zhouwu}
+			</if>
+			<if test="zhouliu !=null and zhouliu>0">
+				and zhouliu=#{zhouliu}
+			</if>
+			<if test="zhouri !=null and zhouri>0">
+				and zhouri=#{zhouri}
+			</if>
+		</trim>
+		LIMIT #{fromTo},#{pageSize}
+	</select>
+</mapper>
+

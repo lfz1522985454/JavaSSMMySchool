@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.TopicMapper">
+	<cache></cache>
+	<!-- 对象存储 -->
+	<resultMap type="Topic" id="TopicList">
+		<id column="topicId" property="topicId" />
+		<result column="skillId" property="skillId" />
+		<result column="opicTypeId" property="opicTypeId" />
+		<result column="topicName" property="topicName" />
+		<result column="topicImg" property="topicImg" />
+		<result column="optionA" property="optionA" />
+		<result column="optionB" property="optionB" />
+		<result column="optionC" property="optionC" />
+		<result column="optionD" property="optionD" />
+		<result column="optionE" property="optionE" />
+		<result column="optionF" property="optionF" />
+		<result column="modelAnswer" property="modelAnswer" />
+		<result column="topicAnalysis" property="topicAnalysis" />
+		<result column="topicErroCount" property="topicErroCount" />
+		<result column="creationDate" property="creationDate" />
+		<result column="createdBy" property="createdBy" />
+		<result column="isEnabled" property="isEnabled" />
+		<result column="isStamp" property="isStamp" />
+		<result column="stampBy" property="stampBy" />
+	</resultMap>
+
+	<!-- 添加题目 -->
+	<insert id="insertTopic" parameterType="Topic">
+		insert into topic
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="skillId!=null">
+				skillId,
+			</if>
+			<if test="opicTypeId!=null">
+				opicTypeId,
+			</if>
+			<if test="topicName!=null">
+				topicName,
+			</if>
+			<if test="topicImg!=null">
+				topicImg,
+			</if>
+			<if test="optionA!=null">
+				optionA,
+			</if>
+			<if test="optionB!=null">
+				optionB,
+			</if>
+			<if test="optionC!=null">
+				optionC,
+			</if>
+			<if test="optionD!=null">
+				optionD,
+			</if>
+			<if test="optionE!=null">
+				optionE,
+			</if>
+			<if test="optionF!=null">
+				optionF,
+			</if>
+			<if test="modelAnswer!=null">
+				modelAnswer,
+			</if>
+			<if test="topicAnalysis!=null">
+				topicAnalysis,
+			</if>
+			<if test="topicErroCount!=null">
+				topicErroCount,
+			</if>
+			<if test="creationDate!=null">
+				creationDate,
+			</if>
+			<if test="isEnabled!=null">
+				isEnabled,
+			</if>
+			<if test="createdBy!=null">
+				createdBy,
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="skillId!=null">
+				#{skillId},
+			</if>
+			<if test="opicTypeId!=null">
+				#{opicTypeId},
+			</if>
+			<if test="topicName!=null">
+				#{topicName},
+			</if>
+			<if test="topicImg!=null">
+				#{topicImg},
+			</if>
+			<if test="optionA!=null">
+				#{optionA},
+			</if>
+			<if test="optionB!=null">
+				#{optionB},
+			</if>
+			<if test="optionC!=null">
+				#{optionC},
+			</if>
+			<if test="optionD!=null">
+				#{optionD},
+			</if>
+			<if test="optionE!=null">
+				#{optionE},
+			</if>
+			<if test="optionF!=null">
+				#{optionF},
+			</if>
+			<if test="modelAnswer!=null">
+				#{modelAnswer},
+			</if>
+			<if test="topicAnalysis!=null">
+				#{topicAnalysis},
+			</if>
+			<if test="topicErroCount!=null">
+				#{topicErroCount},
+			</if>
+			<if test="creationDate!=null">
+				#{creationDate},
+			</if>
+			<if test="isEnabled!=null">
+				#{isEnabled},
+			</if>
+			<if test="createdBy!=null">
+				#{createdBy},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 根据条件返回所有题目 -->
+	<select id="selectTopicWhereSkillId" resultMap="TopicList">
+		select * from
+		topic where skillId=#{skillId} and opicTypeId=#{opicTypeId}
+	</select>
+
+
+
+
+</mapper>

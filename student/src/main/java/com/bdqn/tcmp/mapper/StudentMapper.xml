@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.StudentMapper">
+    <resultMap type="Student" id="studentList">
+        <id column="studentId" property="studentId"/>
+        <result column="studentName" property="studentName"/>
+        <result column="studentPassword" property="studentPassword"/>
+        <result column="phone" property="phone"/>
+        <result column="classId" property="classId"/>
+        <result column="className" property="className"/>
+
+        <result column="isEnabled" property="isEnabled"/>
+        <result column="lastLoginTime" property="lastLoginTime"/>
+        <result column="loginIp" property="loginIp"/>
+        <result column="remark" property="remark"/>
+        <result column="studentCode" property="studentCode"/>
+        <result column="uuId" property="uuId"/>
+        <result column="emergencyNumber" property="emergencyNumber"/>
+        <result column="email" property="email"/>
+        <result column="address" property="address"/>
+        <result column="age" property="age"/>
+        <result column="custromjCount" property="custromjCount"/>
+        <result column="avgScore" property="avgScore"/>
+        <result column="maxScore" property="maxScore"/>
+        <result column="imgFilePath" property="imgFilePath"/>
+        <result column="sw" property="sw"/>
+        <result column="ng" property="ng"/>
+    </resultMap>
+    <select id="selectStudentByStudentCodeAndStudentPassword"
+            resultMap="studentList">
+		select * from student as s
+		INNER JOIN class as c on
+		s.classId=c.classId where
+		studentCode=#{studentCode} and
+		studentPassword=#{studentPassword}
+	</select>
+    <select id="selectStudentByUUID" resultMap="studentList">
+		select * from student
+		as s
+		INNER JOIN class as c on
+		s.classId=c.classId
+		where
+		uuId=#{uuId}
+	</select>
+    <insert id="insertStudentInit" parameterType="Student">
+		insert into
+		Student(studentName,studentPassword,uuId,studentCode,classId,imgFilePath)
+		values(#{studentName},#{studentPassword},#{uuId},#{studentCode},#{classId},'logo')
+	</insert>
+    <select id="selectStudentByStudentCode" resultType="int">
+		select
+		count(1) from student where studentCode=#{studentCode}
+	</select>
+    <update id="updateStudentInfo" parameterType="Student">
+        update Student
+        <trim prefix="set" suffixOverrides=",">
+            <if test="studentName!=null">
+                studentName=#{studentName},
+            </if>
+            <if test="emergencyNumber!=null">
+                emergencyNumber=#{emergencyNumber},
+            </if>
+            <if test="phone!=null">
+                phone=#{phone},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            <if test="email!=null">
+                email=#{email},
+            </if>
+            <if test="address!=null">
+                address=#{address},
+            </if>
+        </trim>
+        <where>
+            studentId=#{studentId}
+        </where>
+    </update>
+
+    <update id="updateStudentByStudentId">
+		update student set custromjCount=#{custromjCount}
+		where studentId=#{studentId}
+	</update>
+    <select id="selectStudetCustromjCount" resultType="int">
+		select
+		CustromjCount from student where studentId=#{studentId}
+	</select>
+
+    <select id="selectStudentPH" resultMap="studentList">
+		select
+		s.studentId,s.studentName,c.classId,c.className,s.custromjCount,AVG(score)
+		as avgScore,MAX(score) as maxScore from student as s
+		INNER JOIN class
+		as c on s.classId=c.classId
+		INNER JOIN custromjl as sj on
+		sj.studentId=s.studentId
+		order by avgScore desc LIMIT 0 ,10
+	</select>
+
+    <update id="updateImgPath">
+		update student set imgFilePath=#{uuid} where
+		studentId=#{studentId}
+	</update>
+
+    <select id="selectStudentAll" resultMap="studentList">
+		select * from student
+	</select>
+
+    <update id="updateStudentBySwAndNg">
+		update student set sw=#{sw},ng =#{ng} where studentId=#{studentId}
+	</update>
+
+    <select id="selectStudentByClassId" resultMap="studentList">
+        select studentId,studentName from student where classId =#{classId}
+	</select>
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.AttendancelMapper">
+    <cache></cache>
+    <resultMap type="Attendancel" id="attendancelList">
+        <id column="attendanceID" property="attendanceID" />
+        <result column="classID" property="classID" /><!---->
+        <result column="studentID" property="studentID" /><!---->
+        <result column="toSchool" property="toSchool" /><!---->
+        <result column="leaveSchool" property="leaveSchool" /><!---->
+        <result column="state" property="state" /><!---->
+        <result column="classDate" property="classDate" /><!---->
+    </resultMap>
+    <!--向插入数据-->
+    <insert id="insertAttendancel" parameterType="Attendancel">
+        insert into attendancel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="classID !=null and classID>0">
+                classID,
+            </if>
+            <if test="studentID !=null and studentID>0">
+                studentID,
+            </if>
+            <if test="toSchool!=null and toSchool!=''">
+                toSchool,
+            </if>
+            <if test="leaveSchool!=null and leaveSchool!=''">
+                leaveSchool,
+            </if>
+            <if test="state !=null and state>0">
+                state,
+            </if>
+            <if test="classDate!=null and classDate!=''">
+                classDate,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="classID !=null and classID>0">
+                #{classID},
+            </if>
+            <if test="studentID !=null and studentID>0">
+                #{studentID},
+            </if>
+            <if test="toSchool!=null and toSchool!=''">
+                #{toSchool},
+            </if>
+            <if test="leaveSchool!=null and leaveSchool!=''">
+                #{leaveSchool},
+            </if>
+            <if test="state !=null and state>0">
+                #{state},
+            </if>
+            <if test="classDate!=null and classDate!=''">
+                #{classDate},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据主键查询一个数据-->
+    <select id="selectAttendancelByID" parameterType="int"  resultMap="attendancelList">
+        select attendanceID ,classID ,studentID ,toSchool ,leaveSchool ,state ,classDate
+        from attendancel where attendanceID=#{id}
+    </select>
+
+    <!--修改数据-->
+    <update id="updateAttendancel" parameterType="Attendancel">
+        update attendancel
+        <trim prefix="set" suffix="where attendanceID=#{attendanceID}" suffixOverrides=",">
+            <if test="classID !=null and classID>0">
+                classID=#{classID},
+            </if>
+            <if test="studentID !=null and studentID>0">
+                studentID=#{studentID},
+            </if>
+            <if test="toSchool!=null and toSchool!=''">
+                toSchool=#{toSchool},
+            </if>
+            <if test="leaveSchool!=null and leaveSchool!=''">
+                leaveSchool=#{leaveSchool},
+            </if>
+            <if test="state !=null and state>0">
+                state=#{state},
+            </if>
+            <if test="classDate!=null and classDate!=''">
+                classDate=#{classDate},
+            </if>
+        </trim>
+    </update>
+
+    <!--修改的启用状态-->
+    <update id="updateAttendancelEnabledByID">
+        update  set isEnabled =#{value} where attendanceID=#{id}
+    </update>
+
+    <!--删除指定主键的数据-->
+    <delete id="deleteAttendancel" parameterType="int">
+        delete from attendancel where attendanceID=#{id}
+    </delete>
+
+    <!--查询全部数据-->
+    <select id="selectAttendancelAll"  resultMap="attendancelList">
+        select attendanceID ,classID ,studentID ,toSchool ,leaveSchool ,state ,classDate
+        from attendancel
+    </select>
+
+    <!--根据条件查询数据-->
+    <select id="selectAttendancelByWhere"  parameterType="AttendancelDTO"  resultMap="attendancelList">
+        select attendanceID ,classID ,studentID ,toSchool ,leaveSchool ,state ,classDate
+        from attendancel
+        <trim prefix="where" prefixOverrides="and">
+            <if test="classID !=null and classID>0">
+                and classID=#{classID}
+            </if>
+            <if test="studentID !=null and studentID>0">
+                and studentID=#{studentID}
+            </if>
+            <if test="toSchool!=null and toSchool!=''">
+                and toSchool like CONCAT('%',#{toSchool},'%')
+            </if>
+            <if test="leaveSchool!=null and leaveSchool!=''">
+                and leaveSchool like CONCAT('%',#{leaveSchool},'%')
+            </if>
+            <if test="state !=null and state>0">
+                and state=#{state}
+            </if>
+            <if test="classDate!=null and classDate!=''">
+                and classDate like CONCAT('%',#{classDate},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--根据条件查询满足条件的记录数-->
+    <select id="selectAttendancelCountByWhere"  parameterType="AttendancelDTO" resultType="int">
+        select count(attendanceID)
+        from attendancel
+        <trim prefix="where" prefixOverrides="and">
+            <if test="classID !=null and classID>0">
+                and classID=#{classID}
+            </if>
+            <if test="studentID !=null and studentID>0">
+                and studentID=#{studentID}
+            </if>
+            <if test="toSchool!=null and toSchool!=''">
+                and toSchool like CONCAT('%',#{toSchool},'%')
+            </if>
+            <if test="leaveSchool!=null and leaveSchool!=''">
+                and leaveSchool like CONCAT('%',#{leaveSchool},'%')
+            </if>
+            <if test="state !=null and state>0">
+                and state=#{state}
+            </if>
+            <if test="classDate!=null and classDate!=''">
+                and classDate like CONCAT('%',#{classDate},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!--得到数据表满足查询条件的分页记录-->
+    <select id="selectAttendancelByPage"  parameterType="AttendancelDTO" resultMap="attendancelList">
+        select attendanceID ,classID ,studentID ,toSchool ,leaveSchool ,state ,classDate
+        from attendancel
+        <trim prefix="where" prefixOverrides="and">
+            <if test="classID !=null and classID>0">
+                and classID=#{classID}
+            </if>
+            <if test="studentID !=null and studentID>0">
+                and studentID=#{studentID}
+            </if>
+            <if test="toSchool!=null and toSchool!=''">
+                and toSchool like CONCAT('%',#{toSchool},'%')
+            </if>
+            <if test="leaveSchool!=null and leaveSchool!=''">
+                and leaveSchool like CONCAT('%',#{leaveSchool},'%')
+            </if>
+            <if test="state !=null and state>0">
+                and state=#{state}
+            </if>
+            <if test="classDate!=null and classDate!=''">
+                and classDate like CONCAT('%',#{classDate},'%')
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+    <!--根据教师的Id 统计班级的出勤状况-->
+    <select id="selectAttendanceForAppByTeachetId" resultType="AttendancelResultDTO" parameterType="Integer">
+        select attendancel.classID,class.className,COUNT(studentID) stuNum, state,dd.attrName from attendancel
+        INNER JOIN dictionarydetail dd on dd.detailID = state
+        INNER JOIN class on class.classId = attendancel.classID
+        where attendancel.classID in (select tcr.classId from teacher tea
+        INNER JOIN teacherclassrelation tcr on tcr.teacherId = tea.teacherId
+        where tea.teacherId = #{studentId})
+        GROUP BY attendancel.classID,state
+    </select>
+</mapper>
+

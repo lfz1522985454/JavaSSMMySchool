@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.LessonMapper">
+    <cache></cache>
+    <resultMap type="Lesson" id="lessonList">
+        <id column="lessonID" property="lessonID"/>
+        <result column="lessonDate" property="lessonDate"/><!---->
+        <result column="subjectNameA" property="subjectNameA"/><!---->
+        <result column="roomIDA" property="roomIDA"/><!---->
+        <result column="classIDA" property="classIDA"/><!---->
+        <result column="teacherIDA" property="teacherIDA"/><!---->
+        <result column="subjectNameB" property="subjectNameB"/><!---->
+        <result column="roomIDB" property="roomIDB"/><!---->
+        <result column="classIDB" property="classIDB"/><!---->
+        <result column="teacherIDB" property="teacherIDB"/><!---->
+        <result column="subjectNameC" property="subjectNameC"/><!---->
+        <result column="roomIDC" property="roomIDC"/><!---->
+        <result column="classIDC" property="classIDC"/><!---->
+        <result column="teacherIDC" property="teacherIDC"/><!---->
+        <result column="subjectNameD" property="subjectNameD"/><!---->
+        <result column="roomIDD" property="roomIDD"/><!---->
+        <result column="classIDD" property="classIDD"/><!---->
+        <result column="teacherIDD" property="teacherIDD"/><!---->
+
+    </resultMap>
+    <!--查询教师在本周的课表-->
+    <select id="selectLessonAllByTeacher" resultMap="lessonList" parameterType="int">
+       				SELECT
+        l.lessonID,
+        l.lessonDate,
+        l.subjectNameA,
+        l.roomIDA,
+        ca.className as  classIDA,
+        ta.teacherName as teacherIDA,
+        l.roomIDB,
+        l.subjectNameB,
+        cb.className as classIDB,
+        tb.teacherName as teacherIDB,
+        l.roomIDC,
+        l.subjectNameC,
+        cc.className as classIDC,
+        tc.teacherName as teacherIDC,
+        l.roomIDD,
+        l.subjectNameD,
+        cd.className as classIDD,
+        td.teacherName as teacherIDD
+        FROM
+        lesson AS l left JOIN
+        teacher AS ta on l.teacherIDA=ta.teacherId LEFT JOIN
+        class AS ca on l.classIDA=ca.classId LEFT JOIN
+        teacher as tb on l.teacherIDB=tb.teacherId LEFT JOIN
+        class AS cb on l.classIDB=cb.classId LEFT JOIN
+        teacher as tc on l.teacherIDC=tc.teacherId LEFT JOIN
+        class AS cc on l.classIDC=cc.classId LEFT JOIN
+        teacher as td on l.teacherIDD=td.teacherId LEFT JOIN
+        class AS cd on l.classIDD=cd.classId
+        where YEARWEEK(date_format(l.lessonDate,'%Y-%m-%d')) = YEARWEEK(now())
+				and cc.classId=#{id} or ca.classId=#{id}
+    </select>
+</mapper>
+

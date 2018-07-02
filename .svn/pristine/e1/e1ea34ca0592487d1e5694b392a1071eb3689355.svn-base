@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.TeacherMapper">
+    <cache></cache>
+    <resultMap type="Teacher" id="teacherInfo">
+        <id property="teacherId" column="teacherId"/>
+        <result property="teacherName" column="teacherName"/>
+        <result property="password" column="password"/>
+        <result property="phone" column="phone"/>
+        <result property="dutyId" column="dutyId"/>
+        <result property="isEnabled" column="isEnabled"/>
+        <result property="lastLoginTime" column="lastLoginTime"/>
+        <result property="loginIp" column="loginIp"/>
+        <result property="remark" column="remark"/>
+        <result property="teacherUUID" column="teacherUUID"/>
+        <result property="openID" column="openID"/>
+    </resultMap>
+    <!-- 查询所有教师 -->
+    <select id="selectTeacherAll" resultMap="teacherInfo">
+		select teacherId,teacherName,password,phone,dutyId,isEnabled,lastLoginTime,loginIp,remark,teacherUUID,openID from teacher
+	</select>
+<select id="selectTeacherId" parameterType="String" resultMap="teacherInfo">
+	select teacherId from teacher
+	<where>
+		<if test="teacherName!=null and teacherName!=''">
+			teacherName=#{teacherName}
+		</if>
+	</where>
+
+</select>
+	
+
+    <!-- 教师登录时返回数据存入localStorage中 -->
+    <select id="selectCountTeacher" parameterType="TeacherDTO" resultType="Teacher">
+        select * from teacher
+        <trim prefix="where" prefixOverrides="and">
+            <if test="teacherName!=null">
+                and teacherName=#{teacherName}
+            </if>
+            <if test="password!=null">
+                and password=#{password}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 添加教师 -->
+    <insert id="insertTeacher" parameterType="teacher">
+        insert into teacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="teacherName!=null and teacherName!=''">
+                teacherName,
+            </if>
+            <if test="password!=null and password!=''">
+                password,
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone,
+            </if>
+            <if test="dutyId!=null and dutyId>0">
+                dutyId,
+            </if>
+            <if test="isEnabled!=null and isEnabled>0">
+                isEnabled,
+            </if>
+            lastLoginTime,
+            <if test="loginIp!=null and loginIp!=''">
+                loginIp,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="teacherName!=null and teacherName!=''">
+                #{teacherName},
+            </if>
+            <if test="password!=null and password!=''">
+                #{password},
+            </if>
+            <if test="phone!=null and phone!=''">
+                #{phone},
+            </if>
+            <if test="dutyId!=null and dutyId>0">
+                #{dutyId},
+            </if>
+            <if test="isEnabled!=null and isEnabled>0">
+                #{isEnabled},
+            </if>
+            Now(),
+            <if test="loginIp!=null and loginIp!=''">
+                #{loginIp},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectByPage" parameterType="teacherDTO" resultMap="teacherInfo">
+        select * from teacher
+        <trim prefix="where" suffixOverrides="and">
+            <if test="teacherName!=null and teacherName!=''">
+                teacherName like CONCAT('%',#{teacherName},'%') and
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone like CONCAT('%',#{phone},'%') and
+            </if>
+            <if test="dutyId>0">
+                dutyId=#{dutyId}
+            </if>
+        </trim>
+        LIMIT #{fromTo},#{pageSize}
+    </select>
+
+    <select id="selectTeacherByTeacherUUID" resultMap="teacherInfo" parameterType="string">
+      select teacherId,teacherName,password,phone,dutyId,isEnabled,lastLoginTime,loginIp,remark,teacherUUID,openID
+        from teacher
+      where teacherUUID=#{teacherUUID}
+    </select>
+
+    <select id="selectTeacherByAttrName" resultMap="teacherInfo" parameterType="int">
+        SELECT t.teacherId,t.teacherName,t.dutyId FROM teacher AS t INNER JOIN dictionarydetail AS d ON d.detailID = t.dutyId where t.dutyId=#{dutyId}
+    </select>
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.weixin.mapper.ApproveMapper">
+    <cache></cache>
+    <update id="updateUserOpenID" parameterType="ApproveParam">
+        <choose>
+            <when test="toType!=null and toType==1"><!--1、教师登陆-->
+                update teacher set openId=#{openId},nickname=#{nickname},
+                headImgUrl=#{headImgUrl} where phone=#{phone} and password=#{password}
+            </when>
+            <when test="toType!=null and toType==2"><!--2、家长登陆-->
+                update parent set openId=#{openId},nickname=#{nickname},
+                headImgUrl=#{headImgUrl} where phone=#{phone} and password=#{password}
+            </when>
+            <when test="toType!=null and toType==3"><!--3、学生登陆-->
+                update student set openId=#{openId},nickname=#{nickname},
+                headImgUrl=#{headImgUrl} where phone=#{phone} and studentpassword=#{password}
+            </when>
+        </choose>
+    </update>
+    <select id="selectParentAll" resultType="string">
+        select openid from parent where isenabled=1
+    </select>
+    <select id="selectParentByClassID" resultType="string" parameterType="int">
+        select p.openID from stuparent sp inner join student stu ON sp.studentID=stu.studentId
+        inner join parent p on sp.parentID=p.parentId
+        where stu.classId=#{classID} and stu.isenabled=1 and p.isenabled=1
+    </select>
+    <select id="selectParentByStuID" parameterType="int" resultType="string">
+        select p.openID from stuparent sp inner join parent p on sp.parentID=p.parentId
+        where sp.studentID=#{stuID} and p.isenabled=1
+    </select>
+    <select id="selectParentByID" resultType="string" parameterType="int">
+       select openid from parent where isenabled=1 and parentId=#{id}
+    </select>
+    <select id="selectTeacherAll" resultType="string">
+        select openid from teacher where isenabled=1
+    </select>
+    <select id="selectTeacherByDuty" resultType="string" parameterType="int">
+         select openid from teacher where isenabled=1 and dutyid=#{dutyID}
+    </select>
+    <select id="selectTeacherByStuID" resultType="string" parameterType="string">
+        select t.openid from teacher t inner join class c on c.headTeacherId=t.teacherId
+        INNER JOIN student s on s.classId=c.classId
+        where t.isenabled=1 and s.studentId=#{stuID}
+        UNION
+        select t.openid from teacher t inner join class c on c.teacherId=t.teacherId
+        INNER JOIN student s on s.classId=c.classId
+        where t.isenabled=1 and s.studentId=#{stuID}
+    </select>
+    <select id="selectTeacherByID" parameterType="int" resultType="string">
+        select openid from teacher where isenabled=1 and  teacherId=#{id}
+    </select>
+    <select id="selectStudentAll" resultType="string">
+        select openid from student where isenabled=1
+    </select>
+    <select id="selectStudentByClassID" resultType="string" parameterType="int">
+      select openid from student where isenabled=1 and classid=#{classID}
+    </select>
+    <select id="selectStudentByID" parameterType="int" resultType="string">
+      select openid from student where studentid=#{id}
+    </select>
+    <select id="selectStudentByTeaID" resultType="string" parameterType="int">
+        select s.openid from student s inner join class c on s.classId=c.classId
+        where c.headTeacherId=#{teaID} and s.isenabled=1
+        UNION
+        select s.openid from student s inner join class c on s.classId=c.classId
+        where c.teacherId=#{teaID} and s.isenabled=1
+    </select>
+</mapper>
+

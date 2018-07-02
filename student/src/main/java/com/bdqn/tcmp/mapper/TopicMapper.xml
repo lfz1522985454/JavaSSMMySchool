@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.tcmp.mapper.TopicMapper">
+	<cache />
+	<!-- 对象存储 -->
+	<resultMap type="Topic" id="TopicList">
+		<id column="topicId" property="topicId" />
+		<result column="skillId" property="skillId" />
+		<result column="opicTypeId" property="opicTypeId" />
+		<result column="topicName" property="topicName" />
+		<result column="topicImg" property="topicImg" />
+		<result column="optionA" property="optionA" />
+		<result column="optionB" property="optionB" />
+		<result column="optionC" property="optionC" />
+		<result column="optionD" property="optionD" />
+		<result column="optionE" property="optionE" />
+		<result column="optionF" property="optionF" />
+		<result column="modelAnswer" property="modelAnswer" />
+		<result column="topicAnalysis" property="topicAnalysis" />
+		<result column="topicErroCount" property="topicErroCount" />
+		<result column="createtionDate" property="createtionDate" />
+		<result column="createdBy" property="createdBy" />
+		<result column="isEnabled" property="isEnabled" />
+		<result column="isStamp" property="isStamp" />
+		<result column="stampBy" property="stampBy" />
+	</resultMap>
+	<!-- 查询全部 -->
+	<select id="selectTopicAll" resultMap="TopicList">
+		select * from Topic where
+		opicTypeId=1 Limit 0,50;
+	</select>
+	<!-- 查询该知识点除去已做过的前20道题 -->
+	<select id="selectTopicBySkillId" resultMap="TopicList">
+		select * from topic
+		where skillId=#{skillId} and opicTypeId=1 LIMIT #{start},20
+	</select>
+	<!-- 返回该知识点的总个数 -->
+	<select id="selectTopicBySkillIdReturnSkillCount" resultType="int">
+		select count(1) as count from topic where skillId=#{skillId} and
+		opicTypeId=1
+	</select>
+	<!-- 查询所有知识点选择题的个数 -->
+	<select id="selectTopicBySkillIdCount" resultMap="TopicList">
+		select
+		skillId,COUNT(skillId) as count from topic where opicTypeId=1 GROUP
+		BY
+		skillId
+	</select>
+
+	<!--依据知识点编号，查询试题列表-->
+	<select id="selectTopicListBySkillId" parameterType="integer" resultMap="TopicList">
+		select * from Topic where skillId=#{skillId}
+	</select>
+</mapper>

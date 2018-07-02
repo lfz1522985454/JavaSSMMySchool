@@ -1,0 +1,30 @@
+-------------------------------Controller代码写法-------------------------------------
+
+ @RequestMapping("/import")
+    public String impotr(HttpServletRequest request, Model model) throws Exception {
+        //获取上传的文件
+        MultipartHttpServletRequest multipart = (MultipartHttpServletRequest) request;
+        MultipartFile file = multipart.getFile("upfile"); //注意：upfile 是前台页面的控件名
+        InputStream in = file.getInputStream();
+        List<List<Object>> listob = ExcelUtil.getBankListByExcel(in,file.getOriginalFilename());
+        //遍历listob数据，把数据放到List中
+        for (int i = 0; i < listob.size(); i++) {
+            List<Object> ob = listob.get(i);
+            //循环输出所有内容
+            for(int j=0;j<ob.size();j++){
+                System.out.print(ob.get(j)+"\t");
+            }
+            System.out.println();
+            //输出指定内容
+            //System.out.println(ob.get(1)+"   "+ob.get(2)+"   "+ob.get(3)+"   "+ob.get(4)+"   "+ob.get(5)+"   "+ob.get(6)+"   "+ob.get(7)+"   "+ob.get(8)+"   "+ob.get(9));
+
+        }
+
+        return "逻辑视图名或其他内容";
+    }
+
+-----------------------------------页面写法--------------------------------------------------
+	<form action="student/import" method="post" enctype="multipart/form-data" name="form1" id="form1">
+		<input type="file" name="upfile" id="upfile" />
+		<input type="submit" name="button" id="button" value="提交" />
+	</form>
